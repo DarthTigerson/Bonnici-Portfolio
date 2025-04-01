@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    {% include "left_panel.html" %}
+    {% include "main_panel.html" %}
+
+    {% if error %}
+    <div class="error-notification">
+        {{ error }}
+        <button class="close-btn">&times;</button>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

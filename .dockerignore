@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+env/
+venv/
+ENV/
+.pdm-python
+
+# Development environment
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Ignore any local db files (they'll be created in the volume)
+db/*.db
+
+# Don't ignore the db directory itself
+!db/.gitkeep 
