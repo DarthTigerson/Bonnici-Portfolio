@@ -1,0 +1,234 @@
+<!-- Main Panel - Scrollable Content -->
+<div class="main-panel">
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <ul class="nav-list">
+            <li class="nav-item active"><a href="#about">About</a></li>
+            <li class="nav-item"><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <!-- About View - Contains About, Services, and Skills sections -->
+    <div id="about-view" class="view-state active">
+        <!-- About Section -->
+        <section id="about" class="content-section">
+            <h1 class="section-title">About Me</h1>
+            <div class="section-content">
+                <p>A dedicated backend developer with over 10 years of experience in the iGaming industry, specializing in automation, web applications, and infrastructure management.</p>
+                
+                <div class="expandable-content" id="about-expandable" style="display: none;">
+                    <p>My journey through SysOps, Automation Engineering, and Backend Development roles has equipped me with a comprehensive understanding of technology ecosystems and the expertise to deliver robust, scalable solutions.</p>
+                    
+                    <p>I'm passionate about leveraging automation to eliminate repetitive tasks and enhance efficiency across systems. This drive fuels both my professional projects and personal endeavors, where I continuously seek opportunities to streamline processes and create innovative applications.</p>
+                    
+                    <p>When I'm not coding, you'll find me exploring new technologies and developing creative solutions to everyday challenges. I thrive in environments where problem-solving and technical innovation intersect to create meaningful impact through technology.</p>
+                </div>
+                
+                <button id="read-more-btn" class="read-more-btn">Read More</button>
+            </div>
+        </section>
+        
+        <!-- What I'm Doing Section -->
+        <section id="services" class="content-section">
+            <h2 class="section-title">What I'm Doing</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon ai-rag-icon"></div>
+                    <h3 class="service-title">AI RAGs</h3>
+                    <p class="service-description">Studying how to build and maintain AI RAGs for specific need.</p>
+                    <div class="in-progress-badge">Learning</div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon web-scraping-icon"></div>
+                    <h3 class="service-title">Web Scraping</h3>
+                    <p class="service-description">Building and maintaining web scraping tools to extract data from websites.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon web-apps-icon"></div>
+                    <h3 class="service-title">Web Apps</h3>
+                    <p class="service-description">Custom web apps tailered for specific needs, built in FastAPI.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon automation-icon"></div>
+                    <h3 class="service-title">Automation</h3>
+                    <p class="service-description">Building and maintaining automation tools to automate tedius, repetative and boring tasks.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Skills Section -->
+        <section id="skills" class="content-section">
+            <h2 class="section-title">Skills</h2>
+            
+            <!-- Frontend Technologies -->
+            <div class="skills-category">
+                <h3 class="category-title">Frontend Technologies</h3>
+                <div class="skills-grid">
+                    <div class="skill-item html">
+                        <div class="skill-icon html-icon"></div>
+                        <div class="skill-name">HTML</div>
+                    </div>
+                    <div class="skill-item css">
+                        <div class="skill-icon css-icon"></div>
+                        <div class="skill-name">CSS</div>
+                    </div>
+                    <div class="skill-item javascript">
+                        <div class="skill-icon javascript-icon"></div>
+                        <div class="skill-name">JavaScript</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Backend Technologies -->
+            <div class="skills-category">
+                <h3 class="category-title">Backend Technologies</h3>
+                <div class="skills-grid">
+                    <div class="skill-item python">
+                        <div class="skill-icon python-icon"></div>
+                        <div class="skill-name">Python</div>
+                    </div>
+                    <div class="skill-item fastapi">
+                        <div class="skill-icon fastapi-icon"></div>
+                        <div class="skill-name">FastAPI</div>
+                    </div>
+                    <div class="skill-item rust">
+                        <div class="skill-icon rust-icon"></div>
+                        <div class="skill-name">Rust</div>
+                        <div class="new-badge">New</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Databases -->
+            <div class="skills-category">
+                <h3 class="category-title">Databases</h3>
+                <div class="skills-grid">
+                    <div class="skill-item postgresql">
+                        <div class="skill-icon postgresql-icon"></div>
+                        <div class="skill-name">PostgreSQL</div>
+                    </div>
+                    <div class="skill-item sqlite">
+                        <div class="skill-icon sqlite-icon"></div>
+                        <div class="skill-name">SQLite</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Deployment & DevOps -->
+            <div class="skills-category">
+                <h3 class="category-title">Deployment & DevOps</h3>
+                <div class="skills-grid">
+                    <div class="skill-item docker">
+                        <div class="skill-icon docker-icon"></div>
+                        <div class="skill-name">Docker</div>
+                    </div>
+                    <div class="skill-item nginx-package-manager">
+                        <div class="skill-icon nginx-package-manager-icon"></div>
+                        <div class="skill-name">Nginx</div>
+                        <div class="new-badge">New</div>
+                    </div>
+                    <div class="skill-item digital-ocean">
+                        <div class="skill-icon digital-ocean-icon"></div>
+                        <div class="skill-name">Digital Ocean</div>
+                    </div>
+                    <div class="skill-item hetzner">
+                        <div class="skill-icon hetzner-icon"></div>
+                        <div class="skill-name">Hetzner</div>
+                    </div>
+                    <div class="skill-item google-cloud">
+                        <div class="skill-icon google-cloud-icon"></div>
+                        <div class="skill-name">Google Cloud</div>
+                    </div>
+                    <div class="skill-item grafana">
+                        <div class="skill-icon grafana-icon"></div>
+                        <div class="skill-name">Grafana</div>
+                    </div>
+                    <div class="skill-item linux">
+                        <div class="skill-icon linux-icon"></div>
+                        <div class="skill-name">Linux</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Version Control -->
+            <div class="skills-category">
+                <h3 class="category-title">Version Control</h3>
+                <div class="skills-grid">
+                    <div class="skill-item git">
+                        <div class="skill-icon git-icon"></div>
+                        <div class="skill-name">Git</div>
+                    </div>
+                    <div class="skill-item github">
+                        <div class="skill-icon github-icon"></div>
+                        <div class="skill-name">Github</div>
+                    </div>
+                    <div class="skill-item gitlab">
+                        <div class="skill-icon gitlab-icon"></div>
+                        <div class="skill-name">Gitlab</div>
+                    </div>
+                    <div class="skill-item bitbucket">
+                        <div class="skill-icon bitbucket-icon"></div>
+                        <div class="skill-name">Bitbucket</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tools & Utilities -->
+            <div class="skills-category">
+                <h3 class="category-title">Tools & Utilities</h3>
+                <div class="skills-grid">
+                    <div class="skill-item cursor">
+                        <div class="skill-icon cursor-icon"></div>
+                        <div class="skill-name">Cursor IDE</div>
+                    </div>
+                    <div class="skill-item vscode">
+                        <div class="skill-icon vscode-icon"></div>
+                        <div class="skill-name">VS Code</div>
+                    </div>
+                    <div class="skill-item pdm">
+                        <div class="skill-icon pdm-icon"></div>
+                        <div class="skill-name">PDM</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Contact View - Contains only the Contact section -->
+    <div id="contact-view" class="view-state">
+        <!-- Contact Section -->
+        <section id="contact" class="content-section">
+            <h1 class="section-title">Contact Me</h1>
+            <div class="section-content">
+                <p>Feel free to reach out if you have any questions or would like to discuss potential collaborations.</p>
+                
+                <form id="contact-form" class="contact-form" action="/contact" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" placeholder="Your full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Your email address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" id="subject" name="subject" placeholder="Subject of your message" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Write your message here..." rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-submit">
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>

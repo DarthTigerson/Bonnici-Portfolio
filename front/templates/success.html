@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    {% include "left_panel.html" %}
+    
+    <div class="main-panel">
+        <section class="content-section">
+            <div class="form-success">
+                <div class="success-icon">✓</div>
+                <h2>Message Sent!</h2>
+                <p class="form-success-message">Thank you for your message. I'll get back to you as soon as possible.</p>
+                <a href="/" class="btn-return">Back to Home</a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %} 
