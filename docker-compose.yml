@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   bonnici-portfolio:
     build:
@@ -8,21 +6,15 @@ services:
     ports:
       - "84:84"
     networks:
-      - portfolio_network
+      - npm_network
     restart: unless-stopped
     container_name: bonnici-portfolio
     volumes:
       - db_data:/app/db  # Persist database files
 
 networks:
-  portfolio_network:
-    # Option 1: Use this if you're not using a reverse proxy like Nginx Proxy Manager
-    # This will create a new network just for this application
-    driver: bridge
-    
-    # Option 2: Use this if you have Nginx Proxy Manager or another reverse proxy
-    # Uncomment the line below and comment out the "driver: bridge" line above
-    # external: true
+  npm_network:
+    external: true
 
 volumes:
   db_data:  # Volume for persisting database data 
