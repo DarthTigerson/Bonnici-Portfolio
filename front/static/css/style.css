@@ -707,6 +707,85 @@ h2.section-title {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E24329'%3E%3Cpath d='M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 01-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 014.82 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0118.6 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.51L23 13.45a.84.84 0 01-.35.94z'/%3E%3C/svg%3E");
 }
 
+/* New Skill Styles */
+/* Pandas */
+.skill-item.pandas {
+    background-color: #1a223d;
+    border: 1px solid rgba(21, 136, 230, 0.3);
+}
+
+.pandas-icon {
+    background-image: url('/static/images/pandas.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Jinja Templating */
+.skill-item.jinja {
+    background-color: #1a2529;
+    border: 1px solid rgba(187, 51, 59, 0.3);
+}
+
+.jinja-icon {
+    background-image: url('/static/images/jinja.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* C# */
+.skill-item.csharp {
+    background-color: #14222d;
+    border: 1px solid rgba(104, 33, 122, 0.3);
+}
+
+.csharp-icon {
+    background-image: url('/static/images/csharp.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Selenium */
+.skill-item.selenium {
+    background-color: #142a14;
+    border: 1px solid rgba(67, 176, 42, 0.3);
+}
+
+.selenium-icon {
+    background-image: url('/static/images/selenium.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* PyTest */
+.skill-item.pytest {
+    background-color: #1a213d;
+    border: 1px solid rgba(0, 112, 204, 0.3);
+}
+
+.pytest-icon {
+    background-image: url('/static/images/pytest.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* IoT */
+.skill-item.iot {
+    background-color: #1d262e;
+    border: 1px solid rgba(77, 184, 255, 0.3);
+}
+
+.iot-icon {
+    background-image: url('/static/images/iot.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 /* Grafana icon */
 .grafana-icon {
     background-image: url('/static/images/grafana.webp');
@@ -840,6 +919,19 @@ h2.section-title {
 .skill-item.google-cloud {
     background-color: #1a202c; /* Dark blue-grey background */
     border: 1px solid rgba(66, 133, 244, 0.4); /* Google blue color */
+}
+
+/* Azure Icon */
+.azure-icon {
+    background-image: url('/static/images/azure.webp');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.skill-item.azure {
+    background-color: #1a2535; /* Dark blue background */
+    border: 1px solid rgba(0, 137, 214, 0.3); /* Azure blue color */
 }
 
 /* Bitbucket Icon */
