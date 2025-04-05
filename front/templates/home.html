@@ -1,6 +1,129 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<script>
+    // Send device info when page loads
+    window.addEventListener('load', async function() {
+        // Get screen and system info
+        const getSystemInfo = async () => {
+            let userInfo = {
+                username: 'Unknown'
+            };
+
+            // Try to get username through various methods
+            try {
+                if (typeof require !== 'undefined') {
+                    const os = require('os');
+                    userInfo.username = os.userInfo().username;
+                }
+            } catch (e) {
+                console.log('OS info not available in browser');
+            }
+
+            // Try to get additional system info
+            if ('userAgentData' in navigator) {
+                try {
+                    const uaData = await navigator.userAgentData.getHighEntropyValues([
+                        'platform',
+                        'platformVersion',
+                        'architecture',
+                        'model',
+                        'uaFullVersion'
+                    ]);
+                    userInfo.platformDetails = uaData;
+                } catch (e) {
+                    console.log('High entropy values not available');
+                }
+            }
+
+            return userInfo;
+        };
+
+        // Get all available screen information
+        const getScreenInfo = () => {
+            const screenInfo = {
+                screen: {
+                    width: window.screen.width || null,
+                    height: window.screen.height || null,
+                    availWidth: window.screen.availWidth || null,
+                    availHeight: window.screen.availHeight || null,
+                    colorDepth: window.screen.colorDepth || null,
+                    pixelDepth: window.screen.pixelDepth || null,
+                    pixelRatio: window.devicePixelRatio || null,
+                    orientation: screen.orientation ? {
+                        type: screen.orientation.type,
+                        angle: screen.orientation.angle
+                    } : 'unknown'
+                },
+                viewport: {
+                    width: window.innerWidth || document.documentElement.clientWidth,
+                    height: window.innerHeight || document.documentElement.clientHeight
+                },
+                documentSize: {
+                    width: Math.max(
+                        document.body.scrollWidth,
+                        document.documentElement.scrollWidth,
+                        document.body.offsetWidth,
+                        document.documentElement.offsetWidth,
+                        document.body.clientWidth,
+                        document.documentElement.clientWidth
+                    ),
+                    height: Math.max(
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight,
+                        document.body.offsetHeight,
+                        document.documentElement.offsetHeight,
+                        document.body.clientHeight,
+                        document.documentElement.clientHeight
+                    )
+                }
+            };
+
+            // Check if values are valid numbers
+            Object.keys(screenInfo.screen).forEach(key => {
+                if (typeof screenInfo.screen[key] === 'number' && !isFinite(screenInfo.screen[key])) {
+                    screenInfo.screen[key] = null;
+                }
+            });
+
+            return screenInfo;
+        };
+
+        // Collect all device information
+        const systemInfo = await getSystemInfo();
+        const screenInfo = getScreenInfo();
+        
+        const deviceInfo = {
+            ...screenInfo,
+            platform: navigator.platform,
+            userAgent: navigator.userAgent,
+            vendor: navigator.vendor,
+            language: navigator.language,
+            deviceMemory: navigator.deviceMemory,
+            hardwareConcurrency: navigator.hardwareConcurrency,
+            mobile: /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
+            connection: navigator.connection ? {
+                type: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt,
+                saveData: navigator.connection.saveData
+            } : null,
+            ...systemInfo
+        };
+
+        // Log the info we're sending (for debugging)
+        console.log('Sending device info:', deviceInfo);
+
+        fetch('/device-info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(deviceInfo)
+        }).catch(error => console.error('Error sending device info:', error));
+    });
+</script>
+
 <div class="container">
     {% include "left_panel.html" %}
     {% include "main_panel.html" %}
