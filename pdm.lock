@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:0a0a432edd6a15379b506844774b57f30e048ab86c42604ff5158ab2779aed9d"
+content_hash = "sha256:2e95fcfb3de27187fb663b2ff8027fa9b9e7676b69a9ba1a55c2228422961950"
 
 [[metadata.targets]]
 requires_python = "==3.13.*"
@@ -263,6 +263,17 @@ files = [
 ]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.20"
+requires_python = ">=3.8"
+summary = "A streaming multipart parser for Python"
+groups = ["default"]
+files = [
+    {file = "python_multipart-0.0.20-py3-none-any.whl", hash = "sha256:8a62d3a8335e06589fe01f2a3e178cdcc632f3fbe0d492ad9ee0ec35aab1f104"},
+    {file = "python_multipart-0.0.20.tar.gz", hash = "sha256:8dd0cab45b8e23064ae09147625994d090fa46f5b0d1e13af944c331a7fa9d13"},
+]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 requires_python = ">=3.8"
@@ -366,6 +377,30 @@ files = [
 ]
 
 [[package]]
+name = "ua-parser"
+version = "1.0.1"
+requires_python = ">=3.9"
+summary = "Python port of Browserscope's user agent parser"
+groups = ["default"]
+dependencies = [
+    "ua-parser-builtins",
+]
+files = [
+    {file = "ua_parser-1.0.1-py3-none-any.whl", hash = "sha256:b059f2cb0935addea7e551251cbbf42e9a8872f86134163bc1a4f79e0945ffea"},
+    {file = "ua_parser-1.0.1.tar.gz", hash = "sha256:f9d92bf19d4329019cef91707aecc23c6d65143ad7e29a233f0580fb0d15547d"},
+]
+
+[[package]]
+name = "ua-parser-builtins"
+version = "0.18.0.post1"
+requires_python = ">=3.9"
+summary = "Precompiled rules for User Agent Parser"
+groups = ["default"]
+files = [
+    {file = "ua_parser_builtins-0.18.0.post1-py3-none-any.whl", hash = "sha256:eb4f93504040c3a990a6b0742a2afd540d87d7f9f05fd66e94c101db1564674d"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.3.0"
 requires_python = ">=3.9"
@@ -374,6 +409,19 @@ groups = ["default"]
 files = [
     {file = "urllib3-2.3.0-py3-none-any.whl", hash = "sha256:1cee9ad369867bfdbbb48b7dd50374c0967a0bb7710050facf0dd6911440e3df"},
     {file = "urllib3-2.3.0.tar.gz", hash = "sha256:f8c5449b3cf0861679ce7e0503c7b44b5ec981bec0d1d3795a07f1ba96f0204d"},
+]
+
+[[package]]
+name = "user-agents"
+version = "2.2.0"
+summary = "A library to identify devices (phones, tablets) and their capabilities by parsing browser user agent strings."
+groups = ["default"]
+dependencies = [
+    "ua-parser>=0.10.0",
+]
+files = [
+    {file = "user-agents-2.2.0.tar.gz", hash = "sha256:d36d25178db65308d1458c5fa4ab39c9b2619377010130329f3955e7626ead26"},
+    {file = "user_agents-2.2.0-py3-none-any.whl", hash = "sha256:a98c4dc72ecbc64812c4534108806fb0a0b3a11ec3fd1eafe807cee5b0a942e7"},
 ]
 
 [[package]]
