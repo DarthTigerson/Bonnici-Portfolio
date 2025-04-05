@@ -2,6 +2,28 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Portfolio website loaded successfully');
     
+    // Social Links Toggle
+    const socialToggleBtn = document.querySelector('.social-toggle-btn');
+    const socialLinksWrapper = document.querySelector('.social-links-wrapper');
+    
+    if (socialToggleBtn && socialLinksWrapper) {
+        socialToggleBtn.addEventListener('click', function() {
+            const isExpanded = socialLinksWrapper.classList.contains('expanded');
+            
+            // Toggle the expanded class
+            socialLinksWrapper.classList.toggle('expanded');
+            socialToggleBtn.classList.toggle('active');
+            
+            // Set the height explicitly for smooth animation
+            if (!isExpanded) {
+                const socialLinks = socialLinksWrapper.querySelector('.social-links');
+                socialLinksWrapper.style.height = socialLinks.offsetHeight + 'px';
+            } else {
+                socialLinksWrapper.style.height = '0';
+            }
+        });
+    }
+    
     // Animated Background
     initParticleNetworkBackground();
     
@@ -34,7 +56,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add transitioning class to create a fade out effect
         mainPanel.classList.add('transitioning');
         
-        // After fade out animation, switch views and fade back in
+        // Handle view-specific transitions
+        if (viewId === '#contact') {
+            // Remove about class first for clean exit
+            document.body.classList.remove('about-active');
+            // Add contact class immediately to start the transition
+            document.body.classList.add('contact-active');
+        } else if (viewId === '#about') {
+            // Remove contact class first
+            document.body.classList.remove('contact-active');
+            // Add about class immediately
+            document.body.classList.add('about-active');
+        }
+        
+        // After initial transition, switch views
         setTimeout(() => {
             // Hide all views
             aboutView.classList.remove('active');
@@ -54,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Scroll to the top of the panel
                 mainPanel.scrollTop = 0;
             }, 50);
-        }, 300); // Matches the transition duration from CSS
+        }, 300);
     }
     
     // Handle navigation clicks
@@ -374,4 +409,105 @@ function initParticleNetworkBackground() {
     
     resizeCanvas();
     animate();
-} 
+}
+
+// Background animation
+const canvas = document.getElementById('background-canvas');
+const ctx = canvas.getContext('2d');
+let animationFrameId;
+let isAnimating = true;
+
+// Resize handler
+function handleResize() {
+    // Set canvas size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Check if we should be animating
+    const shouldAnimate = window.innerWidth > 1250;
+    
+    if (shouldAnimate && !isAnimating) {
+        isAnimating = true;
+        animate(); // Restart animation
+    } else if (!shouldAnimate && isAnimating) {
+        isAnimating = false;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+    }
+}
+
+// Initial setup
+handleResize();
+window.addEventListener('resize', handleResize);
+
+// Animation variables
+const particles = [];
+const particleCount = 100;
+const baseRadius = 1;
+const rangeRadius = 1;
+const baseSpeed = 0.5;
+const rangeSpeed = 1;
+const linkDistance = 100;
+const linkWidth = 0.5;
+
+// Create initial particles
+for (let i = 0; i < particleCount; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: baseRadius + Math.random() * rangeRadius,
+        speed: baseSpeed + Math.random() * rangeSpeed,
+        angle: Math.random() * Math.PI * 2,
+        opacity: 0.1 + Math.random() * 0.3
+    });
+}
+
+// Animation function
+function animate() {
+    if (!isAnimating) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Update and draw particles
+    particles.forEach(particle => {
+        // Move particle
+        particle.x += Math.cos(particle.angle) * particle.speed;
+        particle.y += Math.sin(particle.angle) * particle.speed;
+        
+        // Bounce off edges
+        if (particle.x < 0 || particle.x > canvas.width) {
+            particle.angle = Math.PI - particle.angle;
+        }
+        if (particle.y < 0 || particle.y > canvas.height) {
+            particle.angle = -particle.angle;
+        }
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 0, ${particle.opacity})`;
+        ctx.fill();
+        
+        // Draw connections
+        particles.forEach(otherParticle => {
+            const dx = particle.x - otherParticle.x;
+            const dy = particle.y - otherParticle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < linkDistance) {
+                ctx.beginPath();
+                ctx.moveTo(particle.x, particle.y);
+                ctx.lineTo(otherParticle.x, otherParticle.y);
+                ctx.strokeStyle = `rgba(255, 215, 0, ${(1 - distance / linkDistance) * 0.15})`;
+                ctx.lineWidth = linkWidth;
+                ctx.stroke();
+            }
+        });
+    });
+    
+    animationFrameId = requestAnimationFrame(animate);
+}
+
+// Start animation
+animate(); 

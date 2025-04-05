@@ -6,16 +6,35 @@
     font-family: 'Inter', 'Roboto', sans-serif;
 }
 
+html {
+    height: 100%;
+}
+
 body {
     background-color: #121212;
     color: #ffffff;
-    display: flex;
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
     background-image: 
         radial-gradient(circle at 10% 20%, rgba(30, 30, 50, 0.25) 0%, rgba(18, 18, 18, 0) 80%),
         radial-gradient(circle at 80% 80%, rgba(50, 40, 30, 0.2) 0%, rgba(18, 18, 18, 0) 70%);
+}
+
+@media (max-width: 1250px) {
+    #background-canvas {
+        display: none; /* Hide the animated canvas */
+    }
+    
+    body {
+        background: #121212; /* Base color */
+        background-image: linear-gradient(
+            135deg,
+            rgba(255, 215, 0, 0.15) 0%,
+            rgba(255, 215, 0, 0.05) 70%
+        );
+        background-attachment: fixed; /* Keep gradient fixed while scrolling */
+    }
 }
 
 /* Background Canvas */
@@ -269,7 +288,8 @@ body {
     right: 0;
     background-color: #232323; /* Darker shade */
     border-radius: 0 20px 0 30px; /* Only bottom-left corner is rounded */
-    padding: 18px 28px; /* Slightly reduced padding */
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .nav-list {
@@ -1318,6 +1338,26 @@ h2.section-title {
 
 /* Responsive Layout for screens under 1250px */
 @media (max-width: 1250px) {
+    .container {
+        flex-direction: column;
+        padding-top: 20px; /* Reduced from 50px */
+    }
+    
+    .left-panel {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        top: 0;
+        padding: 20px;
+        margin-bottom: 0;
+    }
+    
+    .left-panel {
+        margin-bottom: 0;
+    }
+    
     /* Change container to column layout */
     .container {
         flex-direction: column;
@@ -1332,7 +1372,7 @@ h2.section-title {
         position: relative;
         top: 0;
         padding: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 0; /* Remove margin-bottom */
     }
     
     /* Adjust profile section to horizontal */
@@ -1342,6 +1382,13 @@ h2.section-title {
         align-items: center;
         gap: 15px;
         flex: 1;
+    }
+
+    /* Add profile info container styles */
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
     
     /* Resize profile image */
@@ -1353,12 +1400,17 @@ h2.section-title {
     
     /* Remove margin from name and title */
     .profile-name {
-        margin-top: 0;
+        margin: 0;
         font-size: 24px;
+        line-height: 1.2;
     }
     
     .profile-title {
-        margin-top: 0;
+        margin: 0;
+        padding: 5px 12px;
+        align-self: flex-start;
+        background-color: rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
     }
     
     /* Hide divider and contact info */
@@ -1388,18 +1440,15 @@ h2.section-title {
         background-color: #333;
     }
     
-    /* Make main panel full width */
+    /* Make main panel full width with adjusted padding */
     .main-panel {
         width: 100%;
+        padding: 30px 25px;
     }
-    
-    /* Keep original navbar styling - NOT changing the navbar in responsive mode */
-    /* Navbar remains in absolute position in the top right corner */
     
     /* Mobile view adjustments */
     @media (max-width: 600px) {
         .left-panel {
-            flex-direction: column;
             padding: 15px;
             gap: 10px;
         }
@@ -1407,9 +1456,275 @@ h2.section-title {
         .profile-section {
             width: 100%;
         }
-        
-        .social-links {
-            align-self: flex-start;
+
+        .main-panel {
+            padding: 20px 12px;
+        }
+
+        .content-section {
+            padding: 15px 0;
+        }
+
+        /* Adjust skills to fit 3 in a row */
+        .skills-grid {
+            gap: 8px;
+        }
+
+        .skill-item {
+            width: 85px;
+            height: 85px;
+            padding: 8px 4px;
+        }
+
+        .skill-icon {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 8px;
+        }
+
+        .skill-name {
+            font-size: 11px;
+        }
+
+        .new-badge {
+            font-size: 8px;
+            padding: 3px 6px;
         }
     }
-} 
+}
+
+/* New breakpoint for very small screens */
+@media (max-width: 460px) {
+    .left-panel {
+        flex-direction: column;
+    }
+    
+    .social-links {
+        align-self: flex-start;
+    }
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+    display: none; /* Hidden by default */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    width: 100%;
+    background-color: #232323;
+    padding: 15px 28px;
+    z-index: 9999;
+    border-top: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.mobile-bottom-nav .nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-bottom-nav .nav-item a {
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 0;
+    transition: color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mobile-bottom-nav .nav-item.active a {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+/* Media Query for Mobile View */
+@media (max-width: 600px) {
+    /* Left panel transitions */
+    .left-panel {
+        transition: all 0.3s ease-in-out;
+        max-height: 1000px;
+        opacity: 1;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 15px;
+    }
+
+    /* Hide left panel when Contact view is active */
+    body.contact-active .left-panel {
+        opacity: 0;
+        max-height: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0;
+        pointer-events: none;
+    }
+
+    /* Show left panel when About view is active */
+    body.about-active .left-panel {
+        opacity: 1;
+        max-height: 1000px;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 15px;
+        pointer-events: auto;
+    }
+
+    /* Main panel transitions */
+    .main-panel {
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .main-panel.transitioning {
+        opacity: 0;
+    }
+
+    /* View state transitions */
+    .view-state {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        display: none;
+    }
+
+    .view-state.active {
+        opacity: 1;
+        display: block;
+    }
+
+    /* Show the mobile navigation */
+    .mobile-bottom-nav {
+        display: block !important;
+    }
+
+    /* Add padding to the bottom of the body */
+    body {
+        padding-bottom: 45px;
+    }
+
+    /* Ensure main panel doesn't interfere with fixed nav */
+    .main-panel {
+        margin-bottom: 45px;
+        padding-bottom: 20px;
+    }
+
+    /* Remove top margin from about and contact sections since nav is at bottom */
+    #about.content-section,
+    #contact.content-section {
+        margin-top: 0;
+    }
+
+    /* Remove bottom margin and padding from skills and contact sections */
+    #skills.content-section,
+    #contact.content-section {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    /* Adjust contact form spacing for mobile */
+    .contact-form {
+        margin-top: 20px;
+        padding: 20px;
+    }
+}
+
+/* Profile title container with toggle button */
+.profile-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;  /* Centered by default (above 1250px) */
+    gap: 8px;
+}
+
+.social-toggle-btn {
+    display: none;  /* Hidden by default, shown only on mobile */
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.social-toggle-btn .arrow-icon {
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid #ffd700;
+    border-bottom: 2px solid #ffd700;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.social-toggle-btn.active .arrow-icon {
+    transform: rotate(-135deg);
+}
+
+.social-links-wrapper {
+    overflow: visible;  /* Show by default */
+    height: auto;  /* Auto height by default */
+}
+
+.social-links {
+    opacity: 1;  /* Visible by default */
+    transform: none;  /* No transform by default */
+}
+
+/* Mobile adjustments for social links toggle */
+@media (max-width: 460px) {
+    .profile-title-container {
+        justify-content: flex-start;  /* Left align in mobile */
+    }
+
+    .social-toggle-btn {
+        display: block;
+    }
+
+    .social-links-wrapper {
+        overflow: hidden;
+        height: 0;  /* Collapsed by default */
+    }
+
+    .social-links {
+        padding: 10px 0;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .social-links-wrapper.expanded {
+        height: 50px;  /* Adjust based on your social links height */
+    }
+
+    .social-links-wrapper.expanded .social-links {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure social links are visible and properly styled at larger widths */
+@media (min-width: 461px) {
+    .social-links-wrapper {
+        margin-top: auto;  /* Push to bottom in desktop view */
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+}
+
+/* Adjust alignment for screens under 1250px */
+@media (max-width: 1250px) {
+    .profile-title-container {
+        justify-content: flex-start;  /* Left align below 1250px */
+    }
+}
+
+@media (max-width: 600px) {
+    .main-nav {
+        display: none;
+    }
+}
