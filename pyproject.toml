@@ -1,7 +1,7 @@
 [project]
 name = "bonnici_portfolio"
-version = "0.2.4"
-description = "Default template for PDM package"
+version = "0.3.0"
+description = "Thomas Bonnici's Portfolio"
 authors = [
     {name = "Thomas Bonnici", email = "thomas.bonnici@icloud.com"},
 ]
@@ -26,3 +26,5 @@ distribution = false
 
 [tool.pdm.scripts]
 front = {cmd = "uvicorn front.main:app --reload --host 0.0.0.0 --port 84"}
+admin = {cmd = "uvicorn admin.main:app --reload --host 0.0.0.0 --port 85"}
+generate_admin_password = {cmd = "python -m admin.cli generate_password"}

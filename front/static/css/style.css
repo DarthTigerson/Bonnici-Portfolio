@@ -735,7 +735,7 @@ h2.section-title {
 }
 
 .pandas-icon {
-    background-image: url('/static/images/pandas.svg');
+    background-image: url('/static/images/pandas.ico');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -890,7 +890,7 @@ h2.section-title {
 }
 
 .skill-item.rust {
-    background-color: #1c1c1c; /* Darker background for Rust */
+    background-color: #361717; /* Darker background for Rust */
     border: 1px solid rgba(183, 65, 14, 0.4); /* Rust orange color */
 }
 
@@ -1767,3 +1767,17 @@ h2.section-title {
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 11px;
+}
+
+/* WordPress */
+.skill-item.wordpress {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(33, 117, 155, 0.3);
+}
+
+.wordpress-icon {
+    background-image: url('/static/images/wordpress.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}

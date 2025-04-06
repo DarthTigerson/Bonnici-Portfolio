@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block header_title %}
+    <h2>Admin Dashboard</h2>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="welcome-card">
+        <h3>Welcome to the Admin Panel</h3>
+        <p>This is a simple dashboard to manage your portfolio website.</p>
+    </div>
+
+    <div class="quick-stats">
+        <div class="stat-box">
+            <h4>Unread Messages</h4>
+            <p class="stat-number">{{ unread_messages }}</p>
+        </div>
+        <div class="stat-box">
+            <h4>Unique Visitors Today</h4>
+            <p class="stat-number">{{ unique_visitors }}</p>
+        </div>
+        <div class="stat-box">
+            <h4>Page Views Today</h4>
+            <p class="stat-number">{{ todays_entries }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add any dashboard-specific JavaScript here
+</script>
+{% endblock %}

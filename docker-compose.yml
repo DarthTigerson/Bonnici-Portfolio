@@ -1,5 +1,5 @@
 services:
-  bonnici-portfolio:
+  front:
     build:
       context: .
       dockerfile: Dockerfile
@@ -8,9 +8,24 @@ services:
     networks:
       - npm_network
     restart: unless-stopped
-    container_name: bonnici-portfolio
+    container_name: bonnici-portfolio-front
     volumes:
       - db_data:/app/db  # Persist database files
+    command: pdm run front
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "85:85"
+    networks:
+      - npm_network
+    restart: unless-stopped
+    container_name: bonnici-portfolio-admin
+    volumes:
+      - db_data:/app/db  # Share the same database volume
+    command: pdm run admin
 
 networks:
   npm_network:

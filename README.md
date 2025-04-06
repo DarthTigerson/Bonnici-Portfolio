@@ -8,6 +8,7 @@ A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
 - Contact form with database storage
 - Discord webhook notifications
 - Docker containerization
+- Secure admin panel with token-based authentication
 
 ## Development
 
@@ -19,14 +20,48 @@ pdm install
 
 # Run development server
 pdm run front
+
+# Run admin panel
+pdm run admin
+
+# Generate admin token
+pdm run generate_admin_password
 ```
+
+### Admin Authentication
+
+The admin panel is protected by a secure token-based authentication system:
+
+1. Generate an admin token using `pdm run generate_admin_password`
+2. Save the token securely - it will only be shown once
+3. Access the admin panel at `http://localhost:85`
+4. Log in using the token
+5. Your session will remain valid for 6 months
+
+Security features:
+- HTTP-only secure cookies
+- Token hashing (only hashes stored in database)
+- Automatic session invalidation when a new token is generated
 
 ### Docker Deployment
 
 ```bash
-# Build and start the container
+# Build and start both front and admin services
 docker-compose up -d
 
-# View logs
+# View logs for all services
 docker-compose logs -f
-``` 
+
+# View logs for a specific service
+docker-compose logs -f front
+docker-compose logs -f admin
+
+# Stop all services
+docker-compose down
+```
+
+The Docker setup runs two services:
+- Front service: Available at http://localhost:84
+- Admin service: Available at http://localhost:85
+
+Both services share the same database volume for data persistence. 

@@ -8,17 +8,19 @@ RUN pip install --no-cache-dir pdm
 # Copy project files
 COPY pyproject.toml pdm.lock README.md ./
 COPY database.py ./
+COPY models.py ./
 COPY front ./front
+COPY admin ./admin
 COPY db ./db
 
 # Install dependencies using PDM
 RUN pdm install --prod
 
-# Expose port 84 (as specified in your pyproject.toml)
-EXPOSE 84
+# Expose ports 84 and 85
+EXPOSE 84 85
 
 # Set up environment variables
 ENV PORT=84
 
-# Run the application with optimized settings for proxy usage
-CMD ["pdm", "run", "uvicorn", "front.main:app", "--host", "0.0.0.0", "--port", "84", "--proxy-headers", "--forwarded-allow-ips", "*"]
+# The actual command will be specified in docker-compose.yml
+CMD ["pdm", "run", "front"]

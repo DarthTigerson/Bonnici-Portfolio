@@ -1,0 +1,23 @@
+<!-- Sidebar Navigation -->
+<nav class="admin-sidebar">
+    <div class="sidebar-header">
+        <h1>Admin Panel</h1>
+    </div>
+    <ul class="sidebar-nav">
+        <li class="nav-item {% if request.path == '/admin/messages' %}active{% endif %}">
+            <a href="/messages">
+                <span class="icon messages-icon"></span>
+                Messages
+            </a>
+        </li>
+        <li class="nav-item {% if request.path == '/admin/visitors' %}active{% endif %}">
+            <a href="/admin/visitors">
+                <span class="icon visitors-icon"></span>
+                Visitors
+            </a>
+        </li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>

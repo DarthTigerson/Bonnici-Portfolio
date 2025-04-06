@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+import json
 from datetime import datetime
 from typing import Annotated, Dict, Any
 import user_agents
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from database import SessionLocal
-from front.models import ContactMessage
+from models import ContactMessage, Entry
 
 # Set up templates with the correct path
 templates = Jinja2Templates(directory="front/templates")
@@ -206,8 +207,8 @@ def send_discord_webhook(name: str, email: str, subject: str, message: str, ip_a
         print(f"Discord webhook error: {str(e)}")
         return False
 
-def send_entry_webhook(request: Request):
-    """Send notification when someone visits the website"""
+def send_entry_webhook(request: Request, db: Session):
+    """Send notification when someone visits the website and save to database"""
     try:
         # Get IP address and user agent
         ip_address = request.client.host if hasattr(request, "client") else None
@@ -221,6 +222,67 @@ def send_entry_webhook(request: Request):
         
         # Format device information
         device_str, os_str, browser_str, resolution_str, additional_info = format_device_info(user_agent_str, device_info)
+        
+        # Create database entry
+        entry = Entry(
+            device_info=json.dumps({
+                "device": device_str,
+                "os": os_str
+            }),
+            display_info=json.dumps({
+                "resolution": resolution_str
+            }),
+            system_info=json.dumps({
+                "additional": additional_info
+            }),
+            browser_info=json.dumps({
+                "browser": browser_str,
+                "user_agent": user_agent_str
+            }),
+            ip_address=ip_address
+        )
+        
+        # Save to database
+        db.add(entry)
+        db.commit()
+        
+        # Skip sending webhook for localhost (127.0.0.1)
+        if ip_address == "127.0.0.1":
+            print("Skipping webhook for localhost entry")
+            # Clear device info from cache
+            if ip_address in device_info_cache:
+                del device_info_cache[ip_address]
+            return
+        
+        # Skip sending webhook for bots and scrapers
+        is_bot = False
+        
+        # Check for common bot indicators in user agent
+        bot_keywords = ["bot", "crawler", "spider", "headless", "phantomjs", "selenium", "puppeteer", "playwright"]
+        if any(keyword in user_agent_str.lower() for keyword in bot_keywords):
+            is_bot = True
+            print(f"Skipping webhook for bot/scraper: {user_agent_str}")
+        
+        # Check device type from device info
+        if device_info and 'device' in device_info:
+            device_type = device_info['device'].lower()
+            if device_type == "other" or "bot" in device_type:
+                is_bot = True
+                print(f"Skipping webhook for non-standard device: {device_type}")
+        
+        # Check browser from device info
+        if device_info and 'browser' in device_info:
+            browser = device_info['browser'].lower()
+            if "headless" in browser or "bot" in browser:
+                is_bot = True
+                print(f"Skipping webhook for headless/bot browser: {browser}")
+        
+        # If it's a bot, skip the webhook
+        if is_bot:
+            # Clear device info from cache
+            if ip_address in device_info_cache:
+                del device_info_cache[ip_address]
+            return
         
         # Base fields with device information
         fields = [
@@ -260,9 +322,9 @@ def send_entry_webhook(request: Request):
                 }
             ])
             
-            # Add map as main image
+            # Add map as main image with English language parameter
             image = {
-                "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1"
+                "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1&lang=en"
             }
         else:
             fields.append({
@@ -275,6 +337,7 @@ def send_entry_webhook(request: Request):
         payload = {
             "embeds": [{
                 "title": "🔔  New Website Visit",
+                "description": f"```Entry ID: {entry.id}```",
                 "color": 5763719,  # Green color (0x57F607 in decimal)
                 "fields": fields,
                 "footer": {
@@ -315,11 +378,11 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.get("/")
-async def home(request: Request):
+async def home(request: Request, db: Session = Depends(get_db)):
     """Render the home page"""
     # Send entry webhook (don't await to avoid slowing down page load)
     try:
-        send_entry_webhook(request)
+        send_entry_webhook(request, db)
     except Exception as e:
         print(f"Error in entry webhook: {str(e)}")
     
