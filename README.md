@@ -64,4 +64,20 @@ The Docker setup runs two services:
 - Front service: Available at http://localhost:84
 - Admin service: Available at http://localhost:85
 
-Both services share the same database volume for data persistence. 
+Both services share the same database volume for data persistence.
+
+#### Admin Token in Docker
+
+When running with Docker, the admin token is automatically generated when the admin service starts. To get your token:
+
+1. Start the services with `docker-compose up -d`
+2. View the admin service logs to find your token:
+   ```bash
+   docker-compose logs admin
+   ```
+3. Look for the section marked with "New admin token generated successfully!"
+4. Save the token securely - it will be needed to log in to the admin panel
+5. If you need to generate a new token later, you can run:
+   ```bash
+   docker-compose exec admin pdm run generate_admin_password
+   ``` 
