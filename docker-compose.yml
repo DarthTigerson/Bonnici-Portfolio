@@ -25,7 +25,13 @@ services:
     container_name: bonnici-portfolio-admin
     volumes:
       - db_data:/app/db  # Share the same database volume
-    command: pdm run admin
+    command: >
+      /bin/sh -c "
+        echo 'Generating admin token...' &&
+        pdm run generate_admin_password &&
+        echo 'Starting admin service...' &&
+        pdm run admin
+      "
 
 networks:
   npm_network:
