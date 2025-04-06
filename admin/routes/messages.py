@@ -51,7 +51,7 @@ async def messages(request: Request, show_unread: bool = False, db: Session = De
 
 @router.get("/{message_id}")
 @require_admin
-async def get_message(message_id: UUID, db: Session = Depends(get_db)):
+async def get_message(request: Request, message_id: UUID, db: Session = Depends(get_db)):
     """Get a specific message by UUID"""
     message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
     if not message:
@@ -86,7 +86,7 @@ async def get_message(message_id: UUID, db: Session = Depends(get_db)):
 
 @router.post("/{message_id}/read")
 @require_admin
-async def mark_as_read(message_id: UUID, db: Session = Depends(get_db)):
+async def mark_as_read(request: Request, message_id: UUID, db: Session = Depends(get_db)):
     """Mark a message as read"""
     message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
     if not message:
@@ -98,7 +98,7 @@ async def mark_as_read(message_id: UUID, db: Session = Depends(get_db)):
 
 @router.post("/{message_id}/archive")
 @require_admin
-async def archive_message(message_id: UUID, db: Session = Depends(get_db)):
+async def archive_message(request: Request, message_id: UUID, db: Session = Depends(get_db)):
     """Archive a message"""
     message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
     if not message:
@@ -110,7 +110,7 @@ async def archive_message(message_id: UUID, db: Session = Depends(get_db)):
 
 @router.post("/{message_id}/unread")
 @require_admin
-async def mark_as_unread(message_id: UUID, db: Session = Depends(get_db)):
+async def mark_as_unread(request: Request, message_id: UUID, db: Session = Depends(get_db)):
     """Mark a message as unread"""
     message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
     if not message:
@@ -122,7 +122,7 @@ async def mark_as_unread(message_id: UUID, db: Session = Depends(get_db)):
 
 @router.delete("/{message_id}/delete")
 @require_admin
-async def delete_message(message_id: UUID, db: Session = Depends(get_db)):
+async def delete_message(request: Request, message_id: UUID, db: Session = Depends(get_db)):
     """Delete a message"""
     message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
     if not message:
@@ -134,7 +134,7 @@ async def delete_message(message_id: UUID, db: Session = Depends(get_db)):
 
 @router.delete("/all")
 @require_admin
-async def delete_all_messages(db: Session = Depends(get_db)):
+async def delete_all_messages(request: Request, db: Session = Depends(get_db)):
     """Delete all messages"""
     try:
         # Delete all messages
