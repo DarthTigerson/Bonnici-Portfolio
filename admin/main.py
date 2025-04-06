@@ -11,16 +11,14 @@ import models
 app = FastAPI(
     title="Admin Panel",
     description="Thomas Bonnici's Admin Panel",
-    version="0.3.0"
+    version="0.3.2"
 )
 
 models.Base.metadata.create_all(bind=engine)
 
-# Mount static files at /static
 app.mount("/static", StaticFiles(directory="admin/static"), name="static")
 
-# Include routes
-app.include_router(admin.router)  # Include admin routes first (login, etc.)
+app.include_router(admin.router)
 app.include_router(home.router)
 app.include_router(messages.router)
 app.include_router(visitors.router)
