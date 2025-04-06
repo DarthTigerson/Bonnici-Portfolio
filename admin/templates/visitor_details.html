@@ -1,0 +1,283 @@
+<!-- Modal Content -->
+<div class="visitor-details-container">
+    <div class="details-header">
+        <h2>Visitor Details</h2>
+        <span class="close-modal">&times;</span>
+    </div>
+
+    <!-- Map Section - Moved to top -->
+    {% if entry.location.lat and entry.location.lon %}
+    <div class="map-section">
+        <h3>Location Map</h3>
+        <div id="visitor-map"></div>
+    </div>
+    {% endif %}
+    
+    <div class="details-grid">
+        <!-- Basic Information -->
+        <div class="detail-card">
+            <h3>Basic Information</h3>
+            <div class="detail-content">
+                <p><strong>Visit Time:</strong> {{ entry.created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>IP Address:</strong> {{ entry.ip_address }}</p>
+            </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="detail-card">
+            <h3>Location Information</h3>
+            <div class="detail-content">
+                {% if entry.location.city != "Unknown" %}
+                    <p><strong>City:</strong> {{ entry.location.city }}</p>
+                    <p><strong>Region:</strong> {{ entry.location.region }}</p>
+                    <p><strong>Country:</strong> {{ entry.location.country }}</p>
+                    <p><strong>Timezone:</strong> {{ entry.location.timezone }}</p>
+                    {% if entry.location.lat and entry.location.lon %}
+                        <p><strong>Coordinates:</strong> {{ entry.location.lat }}, {{ entry.location.lon }}</p>
+                    {% endif %}
+                {% else %}
+                    <p>Location information not available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Network Information -->
+        <div class="detail-card">
+            <h3>Network Information</h3>
+            <div class="detail-content">
+                {% if entry.location.isp %}
+                    <p><strong>ISP:</strong> {{ entry.location.isp }}</p>
+                    {% if entry.location.org %}
+                        <p><strong>Organization:</strong> {{ entry.location.org }}</p>
+                    {% endif %}
+                    {% if entry.location.as %}
+                        <p><strong>AS:</strong> {{ entry.location.as }}</p>
+                    {% endif %}
+                {% else %}
+                    <p>Network information not available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Device Information -->
+        <div class="detail-card">
+            <h3>Device Information</h3>
+            <div class="detail-content">
+                <p><strong>Device:</strong> {{ entry.device_info.get('device', 'Unknown') }}</p>
+                <p><strong>Type:</strong> {{ entry.device_info.get('type', 'Unknown') }}</p>
+                <p><strong>Brand:</strong> {{ entry.device_info.get('brand', 'Unknown') }}</p>
+                <p><strong>Model:</strong> {{ entry.device_info.get('model', 'Unknown') }}</p>
+            </div>
+        </div>
+
+        <!-- Browser Information -->
+        <div class="detail-card">
+            <h3>Browser Information</h3>
+            <div class="detail-content">
+                <p><strong>Browser:</strong> {{ entry.browser_info.get('browser', 'Unknown') }}</p>
+                <p><strong>Version:</strong> {{ entry.browser_info.get('version', 'Unknown') }}</p>
+                <p><strong>Engine:</strong> {{ entry.browser_info.get('engine', 'Unknown') }}</p>
+            </div>
+        </div>
+
+        <!-- System Information -->
+        <div class="detail-card">
+            <h3>System Information</h3>
+            <div class="detail-content">
+                <p><strong>OS:</strong> {{ entry.system_info.get('os', 'Unknown') }}</p>
+                <p><strong>Platform:</strong> {{ entry.system_info.get('platform', 'Unknown') }}</p>
+                <p><strong>Version:</strong> {{ entry.system_info.get('version', 'Unknown') }}</p>
+            </div>
+        </div>
+
+        <!-- Display Information -->
+        <div class="detail-card">
+            <h3>Display Information</h3>
+            <div class="detail-content">
+                <p><strong>Resolution:</strong> {{ entry.display_info.get('width', '?') }}x{{ entry.display_info.get('height', '?') }}</p>
+                <p><strong>Color Depth:</strong> {{ entry.display_info.get('colorDepth', 'Unknown') }}</p>
+                <p><strong>Pixel Ratio:</strong> {{ entry.display_info.get('pixelRatio', 'Unknown') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.visitor-details-container {
+    max-height: calc(90vh - 40px);
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+}
+
+.details-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.details-header h2 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.detail-card h3 {
+    margin: 0 0 12px 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+.detail-content {
+    color: #34495e;
+}
+
+.detail-content p {
+    margin: 8px 0;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+.detail-content strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.map-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.map-section h3 {
+    margin: 0 0 12px 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+#visitor-map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Leaflet Customization */
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+    line-height: 1.4;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #666;
+    padding: 8px 10px 0 0;
+}
+
+.leaflet-popup-content strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Scrollbar Styling */
+.visitor-details-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.visitor-details-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.visitor-details-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.visitor-details-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+
+{% if entry.location.lat and entry.location.lon %}
+<script>
+// Wait for modal to be fully visible before initializing map
+setTimeout(() => {
+    if (!window.L) {
+        // Load Leaflet if not already loaded
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+        document.head.appendChild(cssLink);
+
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+        script.onload = initMap;
+        document.head.appendChild(script);
+    } else {
+        initMap();
+    }
+}, 100);
+
+function initMap() {
+    const mapContainer = document.getElementById('visitor-map');
+    if (!mapContainer) return;
+
+    const map = L.map('visitor-map').setView([{{ entry.location.lat }}, {{ entry.location.lon }}], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    const marker = L.marker([{{ entry.location.lat }}, {{ entry.location.lon }}]).addTo(map);
+    
+    marker.bindPopup(`
+        <strong>{{ entry.location.city }}, {{ entry.location.country }}</strong>
+        {% if entry.location.region %}<div>{{ entry.location.region }}</div>{% endif %}
+        <div>{{ entry.location.lat }}, {{ entry.location.lon }}</div>
+        {% if entry.location.timezone %}<div>{{ entry.location.timezone }}</div>{% endif %}
+    `).openPopup();
+
+    // Add zoom control to top-right
+    map.zoomControl.setPosition('topright');
+
+    // Force a resize after a short delay to ensure proper rendering
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
+}
+</script>
+{% endif %} 

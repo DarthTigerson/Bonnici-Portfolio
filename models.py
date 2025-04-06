@@ -18,3 +18,20 @@ class ContactMessage(Base):
     message = Column(Text, nullable=False)
     subject = Column(String(255), nullable=False)
     viewed = Column(Boolean, default=False, nullable=False)
+
+class Entry(Base):
+    __tablename__ = "entries"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    device_info = Column(String(255), nullable=False)
+    display_info = Column(String(255), nullable=False)
+    system_info = Column(String(255), nullable=False)
+    browser_info = Column(String(255), nullable=False)
+    ip_address = Column(String(45), nullable=True)
+    created = Column(DateTime, default=datetime.now, nullable=False)
+
+class AdminToken(Base):
+    __tablename__ = "admin_token"
+    token_hash = Column(String(255), nullable=False)
+    created = Column(DateTime, default=datetime.now, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

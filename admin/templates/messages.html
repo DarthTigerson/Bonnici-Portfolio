@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block header_title %}
+    <h2>Messages</h2>
+{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <div class="messages-header">
+        <div class="messages-title">
+            <h3>{% if show_unread %}Unread Messages{% else %}All Messages{% endif %}</h3>
+        </div>
+        <div class="messages-actions">
+            <button id="deleteAllBtn" class="delete-all-btn">Delete All Messages</button>
+            <a href="{% if show_unread %}/messages{% else %}/messages?show_unread=true{% endif %}" class="filter-btn">
+                {% if show_unread %}Show All Messages{% else %}Show Unread Only{% endif %}
+            </a>
+        </div>
+    </div>
+    
+    <div class="messages-list">
+        <table class="messages-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr class="message-row {% if not message.viewed %}unread{% endif %}" data-id="{{ message.id }}" onclick="viewMessage('{{ message.id }}')">
+                    <td>{{ message.created.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ message.fullname }}</td>
+                    <td>{{ message.email }}</td>
+                    <td>{{ message.subject }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Message Details</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="message-content">
+                <p><strong>From:</strong> <span id="modalSender"></span> (<span id="modalEmail"></span>)</p>
+                <p><strong>Subject:</strong> <span id="modalSubject"></span></p>
+                <p><strong>Message:</strong></p>
+                <div id="modalMessage" class="message-text"></div>
+            </div>
+            
+            <div class="message-meta">
+                <h3>Sender Information</h3>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <p><strong>IP Address:</strong> <span id="modalIpAddress">-</span></p>
+                    </div>
+                    <div class="meta-item">
+                        <p><strong>Country:</strong> <span id="modalCountry">-</span></p>
+                    </div>
+                    <div class="meta-item">
+                        <p><strong>City:</strong> <span id="modalCity">-</span></p>
+                    </div>
+                    <div class="meta-item">
+                        <p><strong>Date:</strong> <span id="modalDate">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <h3>Location Map</h3>
+                    <div id="modalMap" class="map-frame"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button id="unreadBtn" class="unread-btn">Mark as Unread</button>
+            <button id="deleteBtn" class="delete-btn">Delete Message</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

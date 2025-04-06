@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio Admin Panel">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/admin.css') }}">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <title>Admin Panel | Portfolio</title>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="header-link">
+                    <h1>Admin Panel</h1>
+                </a>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="nav-item {% if request.url.path == '/messages' %}active{% endif %}">
+                    <a href="/messages">
+                        <span class="icon messages-icon"></span>
+                        Messages
+                    </a>
+                </li>
+                <li class="nav-item {% if request.url.path == '/visitors' %}active{% endif %}">
+                    <a href="/visitors">
+                        <span class="icon visitors-icon"></span>
+                        Visitors
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-title">
+                    {% block header_title %}{% endblock %}
+                </div>
+                <div class="header-actions">
+                    <span class="admin-label">Admin</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', path='/js/admin.js') }}" defer></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

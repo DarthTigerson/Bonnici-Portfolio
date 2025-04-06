@@ -1,0 +1,506 @@
+{% extends "layout.html" %}
+
+{% block header_title %}
+    <h2>Visitors</h2>
+{% endblock %}
+
+{% block content %}
+<div class="visitors-container">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Total Visitors</div>
+            <div class="stat-value">{{ total_unique_visitors }}</div>
+            <div class="stat-subtitle">Total Page Views: {{ total_page_views }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Today's Visitors</div>
+            <div class="stat-value">{{ todays_unique_visitors }}</div>
+            <div class="stat-subtitle">Todays Page Views: {{ todays_page_views }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Last 7 Days</div>
+            <div class="stat-value">{{ weekly_unique_visitors }}</div>
+            <div class="stat-subtitle">Weekly Page Views: {{ weekly_page_views }}</div>
+        </div>
+    </div>
+
+    <!-- Recent Visitors Section -->
+    <div class="recent-visitors-section">
+        <div class="section-header">
+            <h2>Recent Visitors</h2>
+            <div class="view-controls">
+                <select class="time-range-select" id="timeRangeSelect">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="this-month">This Month</option>
+                    <option value="last-month">Previous Month</option>
+                    <option value="this-year">This Year</option>
+                    <option value="all">All Time</option>
+                </select>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" data-view="chart">
+                        <i class="fas fa-chart-bar"></i> Chart View
+                    </button>
+                    <button class="view-toggle-btn" data-view="list">
+                        <i class="fas fa-list"></i> List View
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="visitors-chart-view" class="view-content active">
+            <canvas id="visitorsChart"></canvas>
+        </div>
+
+        <div id="visitors-list-view" class="view-content">
+            <div class="table-container">
+                <table class="visitors-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Device</th>
+                            <th>Browser</th>
+                            <th>Location</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visitor in recent_visitors %}
+                        <tr class="visitor-row" data-visitor-id="{{ visitor.id }}" style="cursor: pointer;">
+                            <td>{{ visitor.created.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if visitor.device_info %}
+                                    {% set device = visitor.device_info|from_json %}
+                                    {{ device.get('device', 'Unknown') }}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if visitor.browser_info %}
+                                    {% set browser = visitor.browser_info|from_json %}
+                                    {{ browser.get('browser', 'Unknown') }}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if visitor.location %}
+                                    {% if visitor.location.city != "Unknown" %}
+                                        {{ visitor.location.city }}, 
+                                        {% if visitor.location.region %}
+                                            {{ visitor.location.region }},
+                                        {% endif %}
+                                        {{ visitor.location.country }}
+                                        {% if visitor.location.lat and visitor.location.lon %}
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ visitor.location.lat }}, {{ visitor.location.lon }}
+                                            </small>
+                                        {% endif %}
+                                    {% else %}
+                                        Unknown Location
+                                    {% endif %}
+                                {% else %}
+                                    Unknown Location
+                                {% endif %}
+                            </td>
+                            <td>{{ visitor.ip_address or 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Visitor Details -->
+<div class="modal" id="visitorModal">
+    <div class="modal-content">
+        <div id="modalBody">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<style>
+.text-muted {
+    color: #6c757d;
+    font-size: 0.85em;
+}
+
+.visitors-table td {
+    vertical-align: top;
+    padding: 12px 16px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 5vh auto;
+    width: 90%;
+    max-width: 1200px;
+    height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.close-modal {
+    cursor: pointer;
+    font-size: 24px;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('.view-toggle-btn');
+    const viewContents = document.querySelectorAll('.view-content');
+    const timeRangeSelect = document.getElementById('timeRangeSelect');
+    let visitorsChart = null;
+
+    // Initialize chart on page load since it's the default view
+    initializeChart();
+    updateVisibility();
+
+    // Handle view toggle
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetView = button.getAttribute('data-view');
+            
+            // Update button states
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Update view content
+            viewContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `visitors-${targetView}-view`) {
+                    content.classList.add('active');
+                    if (targetView === 'chart' && !visitorsChart) {
+                        initializeChart();
+                    }
+                }
+            });
+        });
+    });
+
+    // Handle time range changes
+    timeRangeSelect.addEventListener('change', () => {
+        updateVisibility();
+        if (visitorsChart) {
+            visitorsChart.destroy();
+        }
+        initializeChart();
+    });
+
+    function getDateRange(rangeValue) {
+        const now = new Date();
+        const start = new Date(now);
+        const end = new Date(now);
+        
+        switch(rangeValue) {
+            case '7':
+                start.setDate(now.getDate() - 6);
+                break;
+            case '30':
+                start.setDate(now.getDate() - 29);
+                break;
+            case '90':
+                start.setDate(now.getDate() - 89);
+                break;
+            case 'this-month':
+                start.setDate(1);
+                break;
+            case 'last-month':
+                start.setMonth(now.getMonth() - 1, 1);
+                end.setMonth(now.getMonth(), 0);
+                break;
+            case 'this-year':
+                start.setMonth(0, 1);
+                break;
+            case 'all':
+                start.setFullYear(2000); // Set to a very old date
+                break;
+        }
+        
+        // Set time to start/end of day
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        
+        return { start, end };
+    }
+
+    function updateVisibility() {
+        const dateRange = getDateRange(timeRangeSelect.value);
+        const rows = document.querySelectorAll('.visitors-table tbody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const timestamp = row.querySelector('td:first-child').textContent;
+            const rowDate = new Date(timestamp);
+            
+            if (rowDate >= dateRange.start && rowDate <= dateRange.end) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show/hide no data message
+        const tbody = document.querySelector('.visitors-table tbody');
+        let noDataRow = document.querySelector('.no-data-row');
+        
+        if (visibleCount === 0) {
+            if (!noDataRow) {
+                noDataRow = document.createElement('tr');
+                noDataRow.className = 'no-data-row';
+                const td = document.createElement('td');
+                td.colSpan = 5;
+                td.textContent = 'No visitors found for the selected time range';
+                td.style.textAlign = 'center';
+                td.style.padding = '20px';
+                noDataRow.appendChild(td);
+                tbody.appendChild(noDataRow);
+            }
+        } else if (noDataRow) {
+            noDataRow.remove();
+        }
+    }
+
+    function initializeChart() {
+        const ctx = document.getElementById('visitorsChart').getContext('2d');
+        const dateRange = getDateRange(timeRangeSelect.value);
+        const rows = Array.from(document.querySelectorAll('.visitors-table tbody tr'));
+        
+        // Initialize data for date range
+        const dateData = {};
+        let currentDate = new Date(dateRange.start);
+        
+        while (currentDate <= dateRange.end) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            dateData[dateStr] = {
+                pageViews: 0,
+                uniqueIPs: new Set()
+            };
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        // Fill in actual data
+        rows.forEach(row => {
+            const timestamp = row.querySelector('td:first-child').textContent;
+            const rowDate = new Date(timestamp);
+            const dateStr = rowDate.toISOString().split('T')[0];
+            const ip = row.querySelector('td:last-child').textContent;
+            
+            if (rowDate >= dateRange.start && rowDate <= dateRange.end) {
+                if (!dateData[dateStr]) {
+                    dateData[dateStr] = {
+                        pageViews: 0,
+                        uniqueIPs: new Set()
+                    };
+                }
+                dateData[dateStr].pageViews += 1;
+                dateData[dateStr].uniqueIPs.add(ip);
+            }
+        });
+
+        // Sort dates chronologically
+        const sortedDates = Object.keys(dateData).sort();
+
+        visitorsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedDates,
+                datasets: [
+                    {
+                        label: 'Unique Visitors',
+                        data: sortedDates.map(date => dateData[date].uniqueIPs.size),
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true
+                    },
+                    {
+                        label: 'Page Views',
+                        data: sortedDates.map(date => dateData[date].pageViews),
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 15,
+                            callback: function(value, index, values) {
+                                const date = new Date(this.getLabelForValue(value));
+                                if (timeRangeSelect.value === 'this-year' || timeRangeSelect.value === 'all') {
+                                    return date.toLocaleDateString('en-US', { month: 'short' });
+                                }
+                                return date.toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric'
+                                });
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            boxWidth: 10,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (tooltipItems) => {
+                                const date = new Date(tooltipItems[0].label);
+                                return date.toLocaleDateString('en-US', { 
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: timeRangeSelect.value === 'this-year' || timeRangeSelect.value === 'all' ? 'numeric' : undefined
+                                });
+                            },
+                            label: (context) => {
+                                const value = context.parsed.y;
+                                const label = context.dataset.label;
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Modal functionality
+    const modal = document.getElementById('visitorModal');
+    const modalBody = document.getElementById('modalBody');
+    const table = document.querySelector('table');
+
+    // Add click event to table rows
+    table.addEventListener('click', function(e) {
+        const row = e.target.closest('tr[data-visitor-id]');
+        if (!row) return;
+
+        const visitorId = row.getAttribute('data-visitor-id');
+        openModal(visitorId);
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    function openModal(visitorId) {
+        // Fetch visitor details
+        fetch(`/visitors/details/${visitorId}`)
+            .then(response => response.text())
+            .then(html => {
+                modalBody.innerHTML = html;
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+
+                // Set up close button event
+                const closeBtn = modalBody.querySelector('.close-modal');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeModal);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading visitor details:', error);
+                modalBody.innerHTML = '<p>Error loading visitor details. Please try again.</p>';
+            });
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        setTimeout(() => {
+            modalBody.innerHTML = '';
+        }, 300); // Wait for fade out animation
+    }
+});
+</script>
+{% endblock %}
