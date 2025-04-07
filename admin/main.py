@@ -11,7 +11,7 @@ import models
 app = FastAPI(
     title="Admin Panel",
     description="Thomas Bonnici's Admin Panel",
-    version="0.3.2"
+    version="0.4.0"
 )
 
 models.Base.metadata.create_all(bind=engine)
