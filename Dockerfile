@@ -9,9 +9,10 @@ RUN pip install --no-cache-dir pdm
 COPY pyproject.toml pdm.lock README.md ./
 COPY database.py ./
 COPY models.py ./
+COPY config_manager.py ./
 COPY front ./front
 COPY admin ./admin
-COPY db ./db
+COPY data ./data
 
 # Install dependencies using PDM
 RUN pdm install --prod

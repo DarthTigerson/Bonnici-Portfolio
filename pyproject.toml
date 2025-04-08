@@ -1,7 +1,7 @@
 [project]
 name = "bonnici_portfolio"
-version = "0.4.0"
-description = "Thomas Bonnici's Portfolio"
+version = "0.4.1"
+description = "Bonnici's Portfolio"
 authors = [
     {name = "Thomas Bonnici", email = "thomas.bonnici@icloud.com"},
 ]
@@ -13,7 +13,10 @@ dependencies = [
     "jinja2>=3.1.6",
     "requests>=2.32.3",
     "python-multipart>=0.0.9",
-    "user-agents>=2.2.0"
+    "user-agents>=2.2.0",
+    "Pillow>=11.2.1",
+    "colorthief>=0.2.1",
+    "config-manager>=1.1.2"
 ]
 requires-python = "==3.13.*"
 readme = "README.md"

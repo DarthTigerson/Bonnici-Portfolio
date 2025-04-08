@@ -35,3 +35,11 @@ class AdminToken(Base):
     token_hash = Column(String(255), nullable=False)
     created = Column(DateTime, default=datetime.now, nullable=False)
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+class Webhook(Base):
+    __tablename__ = "webhooks"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(255), nullable=False)
+    created = Column(DateTime, default=datetime.now, nullable=False)
+    url = Column(String(255), nullable=False)
+

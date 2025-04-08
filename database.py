@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-SQLALCHEMY_DATA_URL = 'sqlite:///./db/bonnici_portfolio.db'
+SQLALCHEMY_DATA_URL = 'sqlite:///./data/bonnici_portfolio.db'
 engine = create_engine(SQLALCHEMY_DATA_URL, connect_args={'check_same_thread': False})
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
 Base = declarative_base()

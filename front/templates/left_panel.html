@@ -3,31 +3,85 @@
     <!-- Profile Section -->
     <div class="profile-section">
         <div class="profile-image-container">
-            <img src="/static/images/profile.jpg" alt="Thomas Bonnici" class="profile-image">
+            <img src="/data/images/profile.webp" alt="{{ config.main_info.name }}" class="profile-image">
         </div>
         <div class="profile-info">
-            <h1 class="profile-name">Thomas Bonnici</h1>
+            <div class="name-wrapper">
+                <h1 class="profile-name">{{ config.main_info.name }}</h1>
+            </div>
             <div class="profile-title-container">
-                <div class="profile-title">Full Stack Developer</div>
+                <div class="profile-title">
+                    <span class="title-text">{{ config.main_info.job_title }}</span>
+                </div>
+                {% if config.contact_card.social_links.github.enabled or config.contact_card.social_links.linkedin.enabled %}
                 <button class="social-toggle-btn" aria-label="Toggle social links">
                     <span class="arrow-icon"></span>
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
 
+    {% if config.contact_card.social_links.github.enabled or config.contact_card.social_links.linkedin.enabled %}
     <!-- Divider Line -->
     <div class="divider-line"></div>
 
     <!-- Social Links -->
     <div class="social-links-wrapper">
         <div class="social-links">
-            <a href="https://github.com/thomasbonnici" target="_blank" class="social-link">
+            {% if config.contact_card.social_links.github.enabled %}
+            <a href="{{ config.contact_card.social_links.github.url }}" target="_blank" class="social-link">
                 <div class="social-github-icon"></div>
             </a>
-            <a href="https://www.linkedin.com/in/thomas-bonnici/" target="_blank" class="social-link">
+            {% endif %}
+            
+            {% if config.contact_card.social_links.linkedin.enabled %}
+            <a href="{{ config.contact_card.social_links.linkedin.url }}" target="_blank" class="social-link">
                 <div class="linkedin-icon"></div>
             </a>
+            {% endif %}
         </div>
     </div>
+    {% endif %}
 </div>
+
+<style>
+.name-wrapper {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.profile-name {
+    font-size: 28px;
+    line-height: 1.2;
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
+    white-space: nowrap;
+    text-align: center;
+    width: 100%;
+    transform-origin: center;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wrapper = document.querySelector('.name-wrapper');
+    const name = document.querySelector('.profile-name');
+    
+    function adjustNameSize() {
+        const wrapperWidth = wrapper.offsetWidth - 20; // Account for padding
+        const nameWidth = name.scrollWidth;
+        const scale = Math.min(1, wrapperWidth / nameWidth);
+        
+        name.style.transform = `scale(${scale})`;
+    }
+    
+    // Run on load and window resize
+    adjustNameSize();
+    window.addEventListener('resize', adjustNameSize);
+});
+</script>

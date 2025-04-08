@@ -1,4 +1,4 @@
-# Thomas Bonnici Portfolio
+# Bonnici Portfolio
 
 A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
 
@@ -39,7 +39,7 @@ The admin panel is protected by a secure token-based authentication system:
 5. Your session will remain valid for 6 months
 
 Security features:
-- HTTP-only secure cookies
+- HTTPS-only secure cookies
 - Token hashing (only hashes stored in database)
 - Automatic session invalidation when a new token is generated
 

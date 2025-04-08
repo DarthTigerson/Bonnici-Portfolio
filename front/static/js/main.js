@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainPanel = document.querySelector('.main-panel');
     const aboutView = document.getElementById('about-view');
     const contactView = document.getElementById('contact-view');
+    const portfolioView = document.getElementById('portfolio-view');
     
     // Switch between views with smooth transitions
     function switchView(viewId) {
@@ -58,15 +59,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Handle view-specific transitions
         if (viewId === '#contact') {
-            // Remove about class first for clean exit
+            // Remove about and portfolio classes first for clean exit
             document.body.classList.remove('about-active');
+            document.body.classList.remove('portfolio-active');
             // Add contact class immediately to start the transition
             document.body.classList.add('contact-active');
         } else if (viewId === '#about') {
-            // Remove contact class first
+            // Remove contact and portfolio classes first
             document.body.classList.remove('contact-active');
+            document.body.classList.remove('portfolio-active');
             // Add about class immediately
             document.body.classList.add('about-active');
+        } else if (viewId === '#portfolio') {
+            // Remove about and contact classes first
+            document.body.classList.remove('about-active');
+            document.body.classList.remove('contact-active');
+            // Add portfolio class immediately
+            document.body.classList.add('portfolio-active');
         }
         
         // After initial transition, switch views
@@ -74,12 +83,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide all views
             aboutView.classList.remove('active');
             contactView.classList.remove('active');
+            portfolioView.classList.remove('active');
             
             // Show the requested view
             if (viewId === '#about') {
                 aboutView.classList.add('active');
             } else if (viewId === '#contact') {
                 contactView.classList.add('active');
+            } else if (viewId === '#portfolio') {
+                portfolioView.classList.add('active');
             }
             
             // Remove the transitioning class to fade back in
@@ -103,8 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Only switch if not already on this view
             const isAboutView = targetId === '#about' && aboutView.classList.contains('active');
             const isContactView = targetId === '#contact' && contactView.classList.contains('active');
+            const isPortfolioView = targetId === '#portfolio' && portfolioView.classList.contains('active');
             
-            if (!isAboutView && !isContactView) {
+            if (!isAboutView && !isContactView && !isPortfolioView) {
                 // Update active nav item
                 navLinks.forEach(navLink => {
                     navLink.parentElement.classList.remove('active');
@@ -147,6 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
             errorNotification.style.display = 'none';
         }, 5000);
     }
+    
+    // Portfolio tag filtering
+    initPortfolioFilters();
 });
 
 // Interactive Particle Network Background Animation
@@ -510,4 +526,116 @@ function animate() {
 }
 
 // Start animation
-animate(); 
+animate();
+
+// Initialize portfolio filtering functionality
+function initPortfolioFilters() {
+    const filterTags = document.querySelectorAll('.portfolio-intro-tags .tech-tag');
+    
+    // Always start with 'all' selected on page refresh
+    let selectedFilter = 'all';
+    
+    // Set the initially selected filter
+    filterTags.forEach(tag => {
+        if (tag.getAttribute('data-filter') === selectedFilter) {
+            tag.classList.add('selected');
+        } else {
+            tag.classList.remove('selected');
+        }
+    });
+    
+    // Apply initial filtering
+    filterPortfolioItems(selectedFilter);
+    
+    // Add click event listeners to all filter tags
+    filterTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+            // Remove 'selected' class from all tags
+            filterTags.forEach(t => t.classList.remove('selected'));
+            
+            // Add 'selected' class to clicked tag
+            this.classList.add('selected');
+            
+            // Get the filter value
+            const filterValue = this.getAttribute('data-filter');
+            
+            // Update the selected filter (but don't store in localStorage)
+            selectedFilter = filterValue;
+            
+            // Filter portfolio items based on the selected tag
+            filterPortfolioItems(filterValue);
+        });
+    });
+    
+    // Add event listeners to project tag items
+    const projectTagItems = document.querySelectorAll('.tech-tag-item');
+    projectTagItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const filterValue = this.getAttribute('data-filter');
+            
+            // Find the corresponding filter in the top navigation
+            const targetFilter = document.querySelector(`.portfolio-intro-tags .tech-tag[data-filter="${filterValue}"]`);
+            
+            if (targetFilter) {
+                // Remove 'selected' class from all tags
+                filterTags.forEach(t => t.classList.remove('selected'));
+                
+                // Add 'selected' class to target tag
+                targetFilter.classList.add('selected');
+                
+                // Update the selected filter
+                selectedFilter = filterValue;
+                
+                // Filter portfolio items
+                filterPortfolioItems(filterValue);
+                
+                // Scroll to top of portfolio section if needed
+                document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // Handle navigation between panels to preserve selection
+    const navLinks = document.querySelectorAll('.nav-item a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // When navigating back to portfolio, ensure filtering is maintained
+            const targetId = this.getAttribute('href');
+            if (targetId === '#portfolio') {
+                setTimeout(() => {
+                    // Re-apply current filter after view transition
+                    filterPortfolioItems(selectedFilter);
+                    
+                    // Re-highlight the correct tag
+                    filterTags.forEach(tag => {
+                        if (tag.getAttribute('data-filter') === selectedFilter) {
+                            tag.classList.add('selected');
+                        } else {
+                            tag.classList.remove('selected');
+                        }
+                    });
+                }, 350); // Slightly longer than view transition time
+            }
+        });
+    });
+}
+
+// This function will be implemented when you have actual portfolio items to filter
+function filterPortfolioItems(filter) {
+    const portfolioItems = document.querySelectorAll('.portfolio-card');
+    
+    portfolioItems.forEach(item => {
+        if (filter === 'all') {
+            item.style.display = 'flex';
+        } else {
+            // Check if the item has the selected technology
+            // This assumes you'll add data-tags attribute to portfolio cards
+            const tags = item.getAttribute('data-tags');
+            if (tags && tags.includes(filter)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+} 

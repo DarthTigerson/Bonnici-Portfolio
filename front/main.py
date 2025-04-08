@@ -10,12 +10,13 @@ import models
 
 app = FastAPI(
     title="Portfolio Website",
-    description="Thomas Bonnici's Portfolio",
-    version="0.4.0"
+    version="0.4.1"
 )
 
 models.Base.metadata.create_all(bind=engine)
 
+# Mount static directories
 app.mount("/static", StaticFiles(directory="front/static"), name="static")
+app.mount("/data", StaticFiles(directory="data"), name="data")
 
 app.include_router(home.router)

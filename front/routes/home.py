@@ -3,7 +3,7 @@ import sys
 import requests
 import json
 from datetime import datetime
-from typing import Annotated, Dict, Any
+from typing import Annotated, Dict, Any, Optional, List
 import user_agents
 
 from fastapi import APIRouter, Depends, Request, Form
@@ -14,17 +14,32 @@ from sqlalchemy.orm import Session
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from database import SessionLocal
-from models import ContactMessage, Entry
+from models import ContactMessage, Entry, Webhook
+from config_manager import ConfigManager
 
 # Set up templates with the correct path
 templates = Jinja2Templates(directory="front/templates")
 
-# Discord webhook URL - ideally this should be moved to environment variables
-message_webhook_url = "https://discord.com/api/webhooks/1356805711316779099/KebOTSaUK8gmlohsSdQ_94HCiBghMencrTPlODD_H_3fQ564ZMZFzRJv70rXSKbtEtbI"
-entry_webhook_url = "https://discord.com/api/webhooks/1358210542862598286/aMWEOoqzdxrGlvjtEuNiUr6dEBOeWybMrY7IM0yysjH6IV13zBCHiBqAxe064KzgX2i6"
-
 # Global variable to store device info temporarily
 device_info_cache = {}
+
+def get_webhooks_by_type(db: Session, webhook_type: str) -> List[Webhook]:
+    """Get all enabled webhooks of a specific type from the database"""
+    # Only return webhooks that are configured and enabled
+    return db.query(Webhook).filter(Webhook.name == webhook_type).all()
+
+def detect_webhook_platform(url: str) -> str:
+    """Detect the webhook platform based on URL patterns"""
+    url_lower = url.lower()
+    
+    if "discord.com/api/webhooks" in url_lower:
+        return "discord"
+    elif "hooks.slack.com" in url_lower:
+        return "slack"
+    elif "webhook.office.com" in url_lower or "office365.com" in url_lower:
+        return "teams"
+    else:
+        return "generic"
 
 def get_ip_info(ip_address: str):
     """Get geolocation information for an IP address"""
@@ -131,85 +146,238 @@ def format_device_info(user_agent_str: str, device_info: Dict[Any, Any] = None) 
     
     return device_str, os_str, browser_str, resolution_str, additional_info
 
-def send_discord_webhook(name: str, email: str, subject: str, message: str, ip_address: str):
-    """Send notification to Discord webhook"""
+def send_message_webhook(name: str, email: str, subject: str, message: str, ip_address: str, db: Session):
+    """Send notification to configured message webhooks"""
+    # Get message webhooks from database
+    webhooks = get_webhooks_by_type(db, "message")
+    if not webhooks:
+        print("No message webhooks configured or enabled")
+        return False
+    
     # Get IP geolocation
     ip_info = get_ip_info(ip_address)
+    timestamp = datetime.now()
     
-    # Base fields
-    fields = [
-        {
-            "name": "📧  Email",
-            "value": f"```{email}```",
-            "inline": True
-        },
-        {
-            "name": "📝  Subject",
-            "value": f"```fix\n{subject}```",
-            "inline": True
-        },
-        {
-            "name": "💬  Message",
-            "value": f"```fix\n{message}```"
-        }
-    ]
+    # Send to all configured webhooks
+    success = False
     
-    # Add IP and location information
-    if ip_info:
-        location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+    for webhook in webhooks:
+        # Detect platform
+        platform = detect_webhook_platform(webhook.url)
         
-        fields.extend([
-            {
-                "name": "🌐  IP Address",
-                "value": f"```yaml\n{ip_address}```",
-                "inline": True
-            },
-            {
-                "name": "📍  Location",
-                "value": f"```yaml\n{location_str}```",
-                "inline": True
+        if platform == "discord":
+            # Discord format
+            # Base fields
+            fields = [
+                {
+                    "name": "📧  Email",
+                    "value": f"```{email}```",
+                    "inline": True
+                },
+                {
+                    "name": "📝  Subject",
+                    "value": f"```fix\n{subject}```",
+                    "inline": True
+                },
+                {
+                    "name": "💬  Message",
+                    "value": f"```fix\n{message}```"
+                }
+            ]
+            
+            # Add IP and location information
+            if ip_info:
+                location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                
+                fields.extend([
+                    {
+                        "name": "🌐  IP Address",
+                        "value": f"```yaml\n{ip_address}```",
+                        "inline": True
+                    },
+                    {
+                        "name": "📍  Location",
+                        "value": f"```yaml\n{location_str}```",
+                        "inline": True
+                    }
+                ])
+                
+                # Using a larger map as the main image
+                image = {
+                    "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1"
+                }
+            else:
+                fields.append({
+                    "name": "🌐  IP Address",
+                    "value": f"```yaml\n{ip_address}```",
+                    "inline": True
+                })
+                image = None
+            
+            payload = {
+                "embeds": [{
+                    "title": f"📨  New Message from {name}",
+                    "color": 16776960,  # Discord yellow color
+                    "fields": fields,
+                    "footer": {
+                        "text": "Portfolio Contact Form • Powered by IP-API",
+                        "icon_url": "https://www.google.com/s2/favicons?domain=ip-api.com&sz=128"
+                    },
+                    "timestamp": timestamp.isoformat()
+                }]
             }
-        ])
+            
+            # Add image if we have location data
+            if image:
+                payload["embeds"][0]["image"] = image
         
-        # Using a larger map as the main image instead of thumbnail
-        image = {
-            "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1"
-        }
-    else:
-        fields.append({
-            "name": "🌐  IP Address",
-            "value": f"```yaml\n{ip_address}```",
-            "inline": True
-        })
-        image = None
+        elif platform == "slack":
+            # Slack format
+            blocks = [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": f"📨 New Message from {name}",
+                        "emoji": True
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": f"*Email:*\n{email}"},
+                        {"type": "mrkdwn", "text": f"*Subject:*\n{subject}"}
+                    ]
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*Message:*\n>{message}"
+                    }
+                }
+            ]
+            
+            # Add IP and location if available
+            if ip_info:
+                location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                blocks.append({
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": f"*IP Address:*\n{ip_address}"},
+                        {"type": "mrkdwn", "text": f"*Location:*\n{location_str}"}
+                    ]
+                })
+                
+                # Add map image
+                blocks.append({
+                    "type": "image",
+                    "title": {
+                        "type": "plain_text",
+                        "text": "Location Map",
+                        "emoji": True
+                    },
+                    "image_url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=600,300&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1&lang=en",
+                    "alt_text": "Map showing visitor location"
+                })
+            else:
+                blocks.append({
+                    "type": "section",
+                    "fields": [
+                        {"type": "mrkdwn", "text": f"*IP Address:*\n{ip_address}"}
+                    ]
+                })
+            
+            # Add timestamp
+            blocks.append({
+                "type": "context",
+                "elements": [
+                    {"type": "mrkdwn", "text": f"Sent at: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}"}
+                ]
+            })
+            
+            payload = {"blocks": blocks}
+            
+        elif platform == "teams":
+            # Microsoft Teams format
+            facts = [
+                {"name": "Email", "value": email},
+                {"name": "Subject", "value": subject}
+            ]
+            
+            if ip_info:
+                location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                facts.extend([
+                    {"name": "IP Address", "value": ip_address},
+                    {"name": "Location", "value": location_str}
+                ])
+            else:
+                facts.append({"name": "IP Address", "value": ip_address})
+            
+            payload = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "0078D7",
+                "summary": f"New message from {name}",
+                "sections": [
+                    {
+                        "activityTitle": f"📨 New Message from {name}",
+                        "facts": facts,
+                        "text": message
+                    }
+                ]
+            }
+            
+        else:
+            # Generic format
+            payload = {
+                "event": "message",
+                "data": {
+                    "timestamp": timestamp.isoformat(),
+                    "fullname": name,
+                    "email": email,
+                    "subject": subject,
+                    "message": message,
+                    "ip_address": ip_address
+                }
+            }
+            
+            if ip_info:
+                payload["data"]["location"] = {
+                    "city": ip_info["city"],
+                    "region": ip_info["region"],
+                    "country": ip_info["country"],
+                    "coordinates": {
+                        "lat": ip_info["lat"],
+                        "lon": ip_info["lon"]
+                    }
+                }
+        
+        # Send webhook
+        try:
+            response = requests.post(
+                webhook.url,
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=5
+            )
+            
+            if response.status_code >= 200 and response.status_code < 300:
+                success = True
+                print(f"Successfully sent message webhook to {platform} platform")
+            else:
+                print(f"Failed to send message webhook to {platform}: {response.status_code} - {response.text}")
+        except Exception as e:
+            print(f"Error sending message webhook to {platform}: {str(e)}")
     
-    payload = {
-        "embeds": [{
-            "title": f"📨  New Message from {name}",
-            "color": 16776960,  # Discord yellow color
-            "fields": fields,
-            "footer": {
-                "text": "Portfolio Contact Form • Powered by IP-API",
-                "icon_url": "https://www.google.com/s2/favicons?domain=ip-api.com&sz=128"
-            },
-            "timestamp": datetime.now().isoformat()
-        }]
-    }
-    
-    # Add image if we have location data
-    if image:
-        payload["embeds"][0]["image"] = image
-    
-    try:
-        response = requests.post(message_webhook_url, json=payload)
-        return response.status_code == 204
-    except Exception as e:
-        print(f"Discord webhook error: {str(e)}")
-        return False
+    return success
 
-def send_entry_webhook(request: Request, db: Session):
+def send_visitor_webhook(request: Request, db: Session):
     """Send notification when someone visits the website and save to database"""
     try:
+        # Get visitor webhooks from database
+        webhooks = get_webhooks_by_type(db, "visitor")
+        
         # Get IP address and user agent
         ip_address = request.client.host if hasattr(request, "client") else None
         user_agent_str = request.headers.get("user-agent", "Unknown Browser")
@@ -246,6 +414,14 @@ def send_entry_webhook(request: Request, db: Session):
         db.add(entry)
         db.commit()
         
+        # If no webhooks or localhost, skip sending webhook but keep database entry
+        if not webhooks:
+            print("No visitor webhooks configured or enabled")
+            # Clear device info from cache
+            if ip_address in device_info_cache:
+                del device_info_cache[ip_address]
+            return
+            
         # Skip sending webhook for localhost (127.0.0.1)
         if ip_address == "127.0.0.1":
             print("Skipping webhook for localhost entry")
@@ -284,83 +460,237 @@ def send_entry_webhook(request: Request, db: Session):
                 del device_info_cache[ip_address]
             return
         
-        # Base fields with device information
-        fields = [
-            {
-                "name": "Device Information",
-                "value": f"```yaml\n{device_str}\n{os_str}\n{browser_str}```",
-                "inline": False
-            },
-            {
-                "name": "Display",
-                "value": f"```yaml\n{resolution_str}```",
-                "inline": False
-            }
-        ]
+        timestamp = datetime.now()
         
-        # Add additional device info if available
-        if additional_info:
-            fields.append({
-                "name": "System Info",
-                "value": f"```yaml\n{chr(10).join(additional_info)}```",
-                "inline": False
-            })
-        
-        # Add IP and location information
-        if ip_info:
-            location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
-            fields.extend([
-                {
-                    "name": "🔍  IP Address",
-                    "value": f"```yaml\n{ip_address}```",
-                    "inline": True
-                },
-                {
-                    "name": "📍  Location",
-                    "value": f"```yaml\n{location_str}```",
-                    "inline": True
-                }
-            ])
+        # Send to all configured webhooks
+        for webhook in webhooks:
+            # Detect platform
+            platform = detect_webhook_platform(webhook.url)
             
-            # Add map as main image with English language parameter
-            image = {
-                "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1&lang=en"
-            }
-        else:
-            fields.append({
-                "name": "🔍  IP Address",
-                "value": f"```yaml\n{ip_address}```",
-                "inline": True
-            })
-            image = None
-        
-        payload = {
-            "embeds": [{
-                "title": "🔔  New Website Visit",
-                "description": f"```Entry ID: {entry.id}```",
-                "color": 5763719,  # Green color (0x57F607 in decimal)
-                "fields": fields,
-                "footer": {
-                    "text": "Portfolio Website • Powered by IP-API",
-                    "icon_url": "https://www.google.com/s2/favicons?domain=ip-api.com&sz=128"
-                },
-                "timestamp": datetime.now().isoformat()
-            }]
-        }
-        
-        # Add image if we have location data
-        if image:
-            payload["embeds"][0]["image"] = image
-        
-        # Send webhook
-        requests.post(entry_webhook_url, json=payload)
+            if platform == "discord":
+                # Discord format
+                # Base fields with device information
+                fields = [
+                    {
+                        "name": "Device Information",
+                        "value": f"```yaml\n{device_str}\n{os_str}\n{browser_str}```",
+                        "inline": False
+                    },
+                    {
+                        "name": "Display",
+                        "value": f"```yaml\n{resolution_str}```",
+                        "inline": False
+                    }
+                ]
+                
+                # Add additional device info if available
+                if additional_info:
+                    fields.append({
+                        "name": "System Info",
+                        "value": f"```yaml\n{chr(10).join(additional_info)}```",
+                        "inline": False
+                    })
+                
+                # Add IP and location information
+                if ip_info:
+                    location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                    fields.extend([
+                        {
+                            "name": "🔍  IP Address",
+                            "value": f"```yaml\n{ip_address}```",
+                            "inline": True
+                        },
+                        {
+                            "name": "📍  Location",
+                            "value": f"```yaml\n{location_str}```",
+                            "inline": True
+                        }
+                    ])
+                    
+                    # Add map as main image with English language parameter
+                    image = {
+                        "url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=650,400&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1&lang=en"
+                    }
+                else:
+                    fields.append({
+                        "name": "🔍  IP Address",
+                        "value": f"```yaml\n{ip_address}```",
+                        "inline": True
+                    })
+                    image = None
+                
+                payload = {
+                    "embeds": [{
+                        "title": "🔔  New Website Visit",
+                        "description": f"```Entry ID: {entry.id}```",
+                        "color": 5763719,  # Green color (0x57F607 in decimal)
+                        "fields": fields,
+                        "footer": {
+                            "text": "Portfolio Website • Powered by IP-API",
+                            "icon_url": "https://www.google.com/s2/favicons?domain=ip-api.com&sz=128"
+                        },
+                        "timestamp": timestamp.isoformat()
+                    }]
+                }
+                
+                # Add image if we have location data
+                if image:
+                    payload["embeds"][0]["image"] = image
+            
+            elif platform == "slack":
+                # Slack format
+                blocks = [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "🔔 New Website Visit",
+                            "emoji": True
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*Device:*\n{device_str}"},
+                            {"type": "mrkdwn", "text": f"*OS:*\n{os_str}"}
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*Browser:*\n{browser_str}"}
+                        ]
+                    }
+                ]
+                
+                # Add resolution info
+                blocks.append({
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*Display:*\n{resolution_str.replace('\n', ', ')}"
+                    }
+                })
+                
+                # Add IP and location if available
+                if ip_info:
+                    location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                    blocks.append({
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*IP Address:*\n{ip_address}"},
+                            {"type": "mrkdwn", "text": f"*Location:*\n{location_str}"}
+                        ]
+                    })
+                    
+                    # Add map image
+                    blocks.append({
+                        "type": "image",
+                        "title": {
+                            "type": "plain_text",
+                            "text": "Location Map",
+                            "emoji": True
+                        },
+                        "image_url": f"https://static-maps.yandex.ru/1.x/?ll={ip_info['lon']},{ip_info['lat']}&size=600,300&z=11&l=map&pt={ip_info['lon']},{ip_info['lat']},pm2rdm1&lang=en",
+                        "alt_text": "Map showing visitor location"
+                    })
+                else:
+                    blocks.append({
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*IP Address:*\n{ip_address}"}
+                        ]
+                    })
+                
+                # Add timestamp
+                blocks.append({
+                    "type": "context",
+                    "elements": [
+                        {"type": "mrkdwn", "text": f"Visited at: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}"}
+                    ]
+                })
+                
+                payload = {"blocks": blocks}
+                
+            elif platform == "teams":
+                # Microsoft Teams format
+                facts = [
+                    {"name": "Device", "value": device_str},
+                    {"name": "OS", "value": os_str},
+                    {"name": "Browser", "value": browser_str}
+                ]
+                
+                if ip_info:
+                    location_str = f"{ip_info['city']}, {ip_info['region']}, {ip_info['country']}"
+                    facts.extend([
+                        {"name": "IP Address", "value": ip_address},
+                        {"name": "Location", "value": location_str}
+                    ])
+                else:
+                    facts.append({"name": "IP Address", "value": ip_address})
+                
+                payload = {
+                    "@type": "MessageCard",
+                    "@context": "http://schema.org/extensions",
+                    "themeColor": "0078D7",
+                    "summary": "New Website Visit",
+                    "sections": [
+                        {
+                            "activityTitle": "🔔 New Website Visit",
+                            "facts": facts,
+                            "text": f"Display: {resolution_str.replace('\n', ', ')}"
+                        }
+                    ]
+                }
+                
+            else:
+                # Generic format
+                payload = {
+                    "event": "visitor",
+                    "data": {
+                        "id": str(entry.id),
+                        "timestamp": timestamp.isoformat(),
+                        "device_info": device_str,
+                        "browser_info": browser_str,
+                        "system_info": os_str,
+                        "display_info": resolution_str,
+                        "ip_address": ip_address
+                    }
+                }
+                
+                if ip_info:
+                    payload["data"]["location"] = {
+                        "city": ip_info["city"],
+                        "region": ip_info["region"],
+                        "country": ip_info["country"],
+                        "coordinates": {
+                            "lat": ip_info["lat"],
+                            "lon": ip_info["lon"]
+                        }
+                    }
+            
+            # Send webhook
+            try:
+                response = requests.post(
+                    webhook.url,
+                    json=payload,
+                    headers={"Content-Type": "application/json"},
+                    timeout=5
+                )
+                
+                if response.status_code >= 200 and response.status_code < 300:
+                    print(f"Successfully sent visitor webhook to {platform} platform")
+                else:
+                    print(f"Failed to send visitor webhook to {platform}: {response.status_code} - {response.text}")
+            except Exception as e:
+                print(f"Error sending visitor webhook to {platform}: {str(e)}")
         
         # Clear device info from cache
         if ip_address in device_info_cache:
             del device_info_cache[ip_address]
             
     except Exception as e:
-        print(f"Error sending entry webhook: {str(e)}")
+        print(f"Error sending visitor webhook: {str(e)}")
 
 router = APIRouter(
     prefix="",
@@ -380,13 +710,23 @@ db_dependency = Annotated[Session, Depends(get_db)]
 @router.get("/")
 async def home(request: Request, db: Session = Depends(get_db)):
     """Render the home page"""
-    # Send entry webhook (don't await to avoid slowing down page load)
     try:
-        send_entry_webhook(request, db)
+        # Get config data
+        config = ConfigManager.read_config()
+        
+        # Send entry webhook (don't await to avoid slowing down page load)
+        try:
+            send_visitor_webhook(request, db)
+        except Exception as e:
+            print(f"Error in entry webhook: {str(e)}")
+        
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "config": config
+        })
     except Exception as e:
-        print(f"Error in entry webhook: {str(e)}")
-    
-    return templates.TemplateResponse("home.html", {"request": request})
+        print(f"Error loading config: {str(e)}")
+        return templates.TemplateResponse("home.html", {"request": request})
 
 @router.post("/contact", response_class=HTMLResponse)
 async def send_message(
@@ -399,6 +739,9 @@ async def send_message(
 ):
     """Handle contact form submission"""
     try:
+        # Get config data
+        config = ConfigManager.read_config()
+        
         # Get IP address
         ip_address = request.client.host if hasattr(request, "client") else None
         
@@ -418,16 +761,28 @@ async def send_message(
         db.add(contact_message)
         db.commit()
         
-        # Send Discord notification (won't fail form submission if it fails)
-        send_discord_webhook(name, email, subject, message, ip_address)
+        # Send notification (won't fail form submission if it fails)
+        send_message_webhook(name, email, subject, message, ip_address, db)
         
         # Return success page
-        return templates.TemplateResponse("success.html", {"request": request})
+        return templates.TemplateResponse("success.html", {"request": request, "config": config})
     except Exception as e:
         # Log the error
         print(f"Error saving contact message: {str(e)}")
+        
+        # Get config data to avoid the same error in the error page
+        try:
+            config = ConfigManager.read_config()
+        except Exception as config_error:
+            print(f"Error loading config: {str(config_error)}")
+            config = {}
+            
         # Return to home page with error
-        return templates.TemplateResponse("home.html", {"request": request, "error": "There was an error sending your message. Please try again later."})
+        return templates.TemplateResponse("home.html", {
+            "request": request, 
+            "error": "There was an error sending your message. Please try again later.",
+            "config": config
+        })
 
 @router.post("/device-info")
 async def device_info(request: Request):

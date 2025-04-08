@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     container_name: bonnici-portfolio-front
     volumes:
-      - db_data:/app/db  # Persist database files
+      - ./data:/app/data  # Mount data directory (includes database)
     command: pdm run front
 
   admin:
@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     container_name: bonnici-portfolio-admin
     volumes:
-      - db_data:/app/db  # Share the same database volume
+      - ./data:/app/data  # Mount data directory (includes database)
     command: >
       /bin/sh -c "
         echo 'Generating admin token...' &&

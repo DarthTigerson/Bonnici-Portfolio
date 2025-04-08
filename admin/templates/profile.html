@@ -1,0 +1,3167 @@
+{% extends "layout.html" %}
+
+{% block header_title %}
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Secondary Navigation -->
+    <div class="secondary-nav">
+        <button class="nav-tab active" data-tab="main-info">
+            <i class="fas fa-user"></i>
+            Personal Details
+        </button>
+        <button class="nav-tab" data-tab="contact-info">
+            <i class="fas fa-address-card"></i>
+            Social Links
+        </button>
+        <button class="nav-tab" data-tab="about-me">
+            <i class="fas fa-info-circle"></i>
+            Descriptions
+        </button>
+        <button class="nav-tab" data-tab="what-im-doing">
+            <i class="fas fa-laptop-code"></i>
+            What I'm Doing
+        </button>
+        <button class="nav-tab" data-tab="skills">
+            <i class="fas fa-tools"></i>
+            Skills
+        </button>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="content-sections">
+        <!-- Main Information Section -->
+        <div class="tab-content active" id="main-info">
+            <div class="profile-section">
+                <div class="content-container content-container-small">
+                    <div class="profile-image-container">
+                        <div class="profile-image-wrapper">
+                            {% if os.path.exists('data/images/profile.webp') %}
+                                <img src="/data/images/profile.webp" alt="Profile Image" class="profile-image">
+                            {% else %}
+                                <span class="profile-image-placeholder">Image goes here</span>
+                            {% endif %}
+                            <label class="upload-overlay">
+                                <i class="fas fa-upload"></i>
+                                <input type="file" 
+                                    class="profile-image-upload" 
+                                    accept="image/*"
+                                    onchange="uploadProfileImage(event)"
+                                    style="display: none;">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group input-group">
+                        <div class="input-row">
+                            <div class="label-container">Full Name</div>
+                            <div class="input-container">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="name" name="name" 
+                                    value="{{ main_info.name }}" 
+                                    placeholder="Enter your full name">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group input-group">
+                        <div class="input-row">
+                            <div class="label-container">Job Title</div>
+                            <div class="input-container">
+                                <i class="fas fa-briefcase"></i>
+                                <input type="text" id="job_title" name="job_title" 
+                                    value="{{ main_info.job_title }}"
+                                    placeholder="Enter your job title">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="tab-content" id="contact-info">
+            <div class="profile-section">
+                <div class="content-container content-container-small">
+                    <div class="form-group input-group">
+                        <div class="input-row">
+                            <div class="label-container">GitHub Profile</div>
+                            <div class="input-with-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" id="github_enabled" name="social_links.github.enabled" 
+                                        {% if contact_card.social_links.github.enabled %}checked{% endif %}
+                                        onchange="toggleInput('github')">
+                                    <span class="slider"></span>
+                                </label>
+                                <div class="input-container">
+                                    <i class="fab fa-github"></i>
+                                    <input type="url" id="github" name="social_links.github.url" 
+                                        value="{{ contact_card.social_links.github.url }}" 
+                                        placeholder="https://github.com/your-username"
+                                        pattern="https://github\.com/.*"
+                                        {% if not contact_card.social_links.github.enabled %}disabled{% endif %}
+                                        title="Please enter a valid GitHub profile URL">
+                                </div>
+                                <button type="button" 
+                                    class="test-link-btn" 
+                                    id="test_github"
+                                    onclick="openProfileUrl('github')"
+                                    {% if not contact_card.social_links.github.enabled %}disabled{% endif %}
+                                    title="Test GitHub Profile Link">
+                                    <i class="fas fa-flask"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group input-group">
+                        <div class="input-row">
+                            <div class="label-container">LinkedIn Profile</div>
+                            <div class="input-with-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" id="linkedin_enabled" name="social_links.linkedin.enabled" 
+                                        {% if contact_card.social_links.linkedin.enabled %}checked{% endif %}
+                                        onchange="toggleInput('linkedin')">
+                                    <span class="slider"></span>
+                                </label>
+                                <div class="input-container">
+                                    <i class="fab fa-linkedin"></i>
+                                    <input type="url" id="linkedin" name="social_links.linkedin.url" 
+                                        value="{{ contact_card.social_links.linkedin.url }}" 
+                                        placeholder="https://linkedin.com/in/your-profile"
+                                        pattern="https://linkedin\.com/in/.*"
+                                        {% if not contact_card.social_links.linkedin.enabled %}disabled{% endif %}
+                                        title="Please enter a valid LinkedIn profile URL">
+                                </div>
+                                <button type="button" 
+                                    class="test-link-btn" 
+                                    id="test_linkedin"
+                                    onclick="openProfileUrl('linkedin')"
+                                    {% if not contact_card.social_links.linkedin.enabled %}disabled{% endif %}
+                                    title="Test LinkedIn Profile Link">
+                                    <i class="fas fa-flask"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Me Section -->
+        <div class="tab-content" id="about-me">
+            <div class="profile-section">
+                <div class="content-container content-container-large">
+                    <div class="form-group">
+                        <label for="short_description">
+                            Short Description
+                            <span class="char-counter" id="shortDescCounter">0/200</span>
+                        </label>
+                        <textarea id="short_description" name="short_description" 
+                            rows="2" maxlength="200" 
+                            placeholder="Brief overview of your professional background">{{ about_me.short_description }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="long_description">
+                            Long Description
+                            <button type="button" class="help-icon" data-tooltip="Long description will appear after a user clicks 'read more'">
+                                <i class="fas fa-circle-question"></i>
+                            </button>
+                        </label>
+                        <textarea id="long_description" name="long_description" 
+                            rows="15" 
+                            placeholder="Detailed description of your experience and expertise">{{ about_me.long_description }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What I'm Doing Section -->
+        <div class="tab-content" id="what-im-doing">
+            <div class="profile-section">
+                <div class="content-container content-container-large">
+                    <div class="what-im-doing-grid">
+                        <!-- Panel 1 -->
+                        <div class="what-im-doing-panel" id="panel1" draggable="true">
+                            <div class="panel-header">
+                                <div class="drag-handle">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="panel1_enabled" name="panel_1.enabled" 
+                                        {% if what_im_doing.panel_1.enabled %}checked{% endif %}
+                                        onchange="togglePanel('panel1')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="panel-content" id="panel1_inputs">
+                                <div class="svg-preview-container">
+                                    <div class="svg-preview" id="panel1_svg_preview">
+                                        <!-- SVG preview will be inserted here -->
+                                    </div>
+                                    <div class="svg-input-container">
+                                        <div class="input-container">
+                                            <i class="fas fa-heading"></i>
+                                            <input type="text" id="panel1_title" name="panel_1.title" 
+                                                value="{{ what_im_doing.panel_1.title }}"
+                                                placeholder="Enter panel title"
+                                                {% if not what_im_doing.panel_1.enabled %}disabled{% endif %}>
+                                        </div>
+                                        <div class="input-container">
+                                            <i class="fas fa-image"></i>
+                                            <input type="url" id="panel1_image" name="panel_1.image" 
+                                                value="{{ what_im_doing.panel_1.image }}"
+                                                placeholder="Enter SVG image code"
+                                                onchange="updateSvgPreview('panel1')"
+                                                {% if not what_im_doing.panel_1.enabled %}disabled{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="description-container">
+                                    <span class="char-counter" id="panel1DescCounter">0/200</span>
+                                    <textarea id="panel1_description" name="panel_1.description" 
+                                        maxlength="200" 
+                                        placeholder="Enter panel description"
+                                        {% if not what_im_doing.panel_1.enabled %}disabled{% endif %}>{{ what_im_doing.panel_1.description }}</textarea>
+                                </div>
+                                <div class="input-container">
+                                    <i class="fas fa-tag"></i>
+                                    <select id="panel1_label" name="panel_1.flag.text"
+                                        {% if not what_im_doing.panel_1.enabled %}disabled{% endif %}>
+                                        <option value="">No Label</option>
+                                        <option value="New" {% if what_im_doing.panel_1.flag.text == "New" %}selected{% endif %}>New</option>
+                                        <option value="Learning" {% if what_im_doing.panel_1.flag.text == "Learning" %}selected{% endif %}>Learning</option>
+                                        <option value="Studying" {% if what_im_doing.panel_1.flag.text == "Studying" %}selected{% endif %}>Studying</option>
+                                        <option value="Ongoing" {% if what_im_doing.panel_1.flag.text == "Ongoing" %}selected{% endif %}>Ongoing</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2 -->
+                        <div class="what-im-doing-panel" id="panel2" draggable="true">
+                            <div class="panel-header">
+                                <div class="drag-handle">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="panel2_enabled" name="panel_2.enabled" 
+                                        {% if what_im_doing.panel_2.enabled %}checked{% endif %}
+                                        onchange="togglePanel('panel2')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="panel-content" id="panel2_inputs">
+                                <div class="svg-preview-container">
+                                    <div class="svg-preview" id="panel2_svg_preview">
+                                        <!-- SVG preview will be inserted here -->
+                                    </div>
+                                    <div class="svg-input-container">
+                                        <div class="input-container">
+                                            <i class="fas fa-heading"></i>
+                                            <input type="text" id="panel2_title" name="panel_2.title" 
+                                                value="{{ what_im_doing.panel_2.title }}"
+                                                placeholder="Enter panel title"
+                                                {% if not what_im_doing.panel_2.enabled %}disabled{% endif %}>
+                                        </div>
+                                        <div class="input-container">
+                                            <i class="fas fa-image"></i>
+                                            <input type="url" id="panel2_image" name="panel_2.image" 
+                                                value="{{ what_im_doing.panel_2.image }}"
+                                                placeholder="Enter SVG image code"
+                                                onchange="updateSvgPreview('panel2')"
+                                                {% if not what_im_doing.panel_2.enabled %}disabled{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="description-container">
+                                    <span class="char-counter" id="panel2DescCounter">0/200</span>
+                                    <textarea id="panel2_description" name="panel_2.description" 
+                                        maxlength="200" 
+                                        placeholder="Enter panel description"
+                                        {% if not what_im_doing.panel_2.enabled %}disabled{% endif %}>{{ what_im_doing.panel_2.description }}</textarea>
+                                </div>
+                                <div class="input-container">
+                                    <i class="fas fa-tag"></i>
+                                    <select id="panel2_label" name="panel_2.flag.text"
+                                        {% if not what_im_doing.panel_2.enabled %}disabled{% endif %}>
+                                        <option value="">No Label</option>
+                                        <option value="New" {% if what_im_doing.panel_2.flag.text == "New" %}selected{% endif %}>New</option>
+                                        <option value="Learning" {% if what_im_doing.panel_2.flag.text == "Learning" %}selected{% endif %}>Learning</option>
+                                        <option value="Studying" {% if what_im_doing.panel_2.flag.text == "Studying" %}selected{% endif %}>Studying</option>
+                                        <option value="Ongoing" {% if what_im_doing.panel_2.flag.text == "Ongoing" %}selected{% endif %}>Ongoing</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 3 -->
+                        <div class="what-im-doing-panel" id="panel3" draggable="true">
+                            <div class="panel-header">
+                                <div class="drag-handle">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="panel3_enabled" name="panel_3.enabled" 
+                                        {% if what_im_doing.panel_3.enabled %}checked{% endif %}
+                                        onchange="togglePanel('panel3')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="panel-content" id="panel3_inputs">
+                                <div class="svg-preview-container">
+                                    <div class="svg-preview" id="panel3_svg_preview">
+                                        <!-- SVG preview will be inserted here -->
+                                    </div>
+                                    <div class="svg-input-container">
+                                        <div class="input-container">
+                                            <i class="fas fa-heading"></i>
+                                            <input type="text" id="panel3_title" name="panel_3.title" 
+                                                value="{{ what_im_doing.panel_3.title }}"
+                                                placeholder="Enter panel title"
+                                                {% if not what_im_doing.panel_3.enabled %}disabled{% endif %}>
+                                        </div>
+                                        <div class="input-container">
+                                            <i class="fas fa-image"></i>
+                                            <input type="url" id="panel3_image" name="panel_3.image" 
+                                                value="{{ what_im_doing.panel_3.image }}"
+                                                placeholder="Enter SVG image code"
+                                                onchange="updateSvgPreview('panel3')"
+                                                {% if not what_im_doing.panel_3.enabled %}disabled{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="description-container">
+                                    <span class="char-counter" id="panel3DescCounter">0/200</span>
+                                    <textarea id="panel3_description" name="panel_3.description" 
+                                        maxlength="200" 
+                                        placeholder="Enter panel description"
+                                        {% if not what_im_doing.panel_3.enabled %}disabled{% endif %}>{{ what_im_doing.panel_3.description }}</textarea>
+                                </div>
+                                <div class="input-container">
+                                    <i class="fas fa-tag"></i>
+                                    <select id="panel3_label" name="panel_3.flag.text"
+                                        {% if not what_im_doing.panel_3.enabled %}disabled{% endif %}>
+                                        <option value="">No Label</option>
+                                        <option value="New" {% if what_im_doing.panel_3.flag.text == "New" %}selected{% endif %}>New</option>
+                                        <option value="Learning" {% if what_im_doing.panel_3.flag.text == "Learning" %}selected{% endif %}>Learning</option>
+                                        <option value="Studying" {% if what_im_doing.panel_3.flag.text == "Studying" %}selected{% endif %}>Studying</option>
+                                        <option value="Ongoing" {% if what_im_doing.panel_3.flag.text == "Ongoing" %}selected{% endif %}>Ongoing</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 4 -->
+                        <div class="what-im-doing-panel" id="panel4" draggable="true">
+                            <div class="panel-header">
+                                <div class="drag-handle">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="panel4_enabled" name="panel_4.enabled" 
+                                        {% if what_im_doing.panel_4.enabled %}checked{% endif %}
+                                        onchange="togglePanel('panel4')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="panel-content" id="panel4_inputs">
+                                <div class="svg-preview-container">
+                                    <div class="svg-preview" id="panel4_svg_preview">
+                                        <!-- SVG preview will be inserted here -->
+                                    </div>
+                                    <div class="svg-input-container">
+                                        <div class="input-container">
+                                            <i class="fas fa-heading"></i>
+                                            <input type="text" id="panel4_title" name="panel_4.title" 
+                                                value="{{ what_im_doing.panel_4.title }}"
+                                                placeholder="Enter panel title"
+                                                {% if not what_im_doing.panel_4.enabled %}disabled{% endif %}>
+                                        </div>
+                                        <div class="input-container">
+                                            <i class="fas fa-image"></i>
+                                            <input type="url" id="panel4_image" name="panel_4.image" 
+                                                value="{{ what_im_doing.panel_4.image }}"
+                                                placeholder="Enter SVG image code"
+                                                onchange="updateSvgPreview('panel4')"
+                                                {% if not what_im_doing.panel_4.enabled %}disabled{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="description-container">
+                                    <span class="char-counter" id="panel4DescCounter">0/200</span>
+                                    <textarea id="panel4_description" name="panel_4.description" 
+                                        maxlength="200" 
+                                        placeholder="Enter panel description"
+                                        {% if not what_im_doing.panel_4.enabled %}disabled{% endif %}>{{ what_im_doing.panel_4.description }}</textarea>
+                                </div>
+                                <div class="input-container">
+                                    <i class="fas fa-tag"></i>
+                                    <select id="panel4_label" name="panel_4.flag.text"
+                                        {% if not what_im_doing.panel_4.enabled %}disabled{% endif %}>
+                                        <option value="">No Label</option>
+                                        <option value="New" {% if what_im_doing.panel_4.flag.text == "New" %}selected{% endif %}>New</option>
+                                        <option value="Learning" {% if what_im_doing.panel_4.flag.text == "Learning" %}selected{% endif %}>Learning</option>
+                                        <option value="Studying" {% if what_im_doing.panel_4.flag.text == "Studying" %}selected{% endif %}>Studying</option>
+                                        <option value="Ongoing" {% if what_im_doing.panel_4.flag.text == "Ongoing" %}selected{% endif %}>Ongoing</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="tab-content" id="skills">
+            <div class="profile-section">
+                <div class="content-container content-container-large">
+                    <!-- Skills Sections Container -->
+                    <div class="skills-sections" id="skillsSectionsContainer">
+                        {% for section_id, section in skills.sections.items() %}
+                        <div class="skills-section" data-section-id="{{ section_id }}">
+                            <div class="section-header">
+                                <input type="text" class="section-title" 
+                                    value="{{ section.title }}"
+                                    placeholder="Section Title"
+                                    onchange="updateSection('{{ section_id }}')">
+                                <div class="move-buttons">
+                                    <button type="button" class="move-btn" onclick="moveSection('{{ section_id }}', 'up')" title="Move section up">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="move-btn" onclick="moveSection('{{ section_id }}', 'down')" title="Move section down">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <button class="delete-section-btn" onclick="deleteSection('{{ section_id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Skills Grid -->
+                            <div class="skills-grid" data-section-id="{{ section_id }}">
+                                {% for skill in section.skills %}
+                                <div class="skill-card" draggable="true" data-skill-title="{{ skill.title }}">
+                                    <div class="skill-header">
+                                        <div class="drag-handle">
+                                            <i class="fas fa-grip-vertical"></i>
+                                        </div>
+                                        <label class="upload-overlay">
+                                            <i class="fas fa-upload"></i>
+                                            <input type="file" 
+                                                class="skill-image-upload" 
+                                                accept="image/*"
+                                                onchange="uploadSkillImage(event, '{{ section_id }}', '{{ skill.title }}')"
+                                                style="display: none;">
+                                        </label>
+                                        <button class="delete-skill-btn" onclick="deleteSkill('{{ section_id }}', '{{ skill.title }}')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="skill-image-container">
+                                        <img src="/data/images/skills/{{ skill.image }}" alt="{{ skill.title }}" class="skill-image">
+                                    </div>
+                                    <input type="text" 
+                                        class="skill-title" 
+                                        value="{{ skill.title }}"
+                                        placeholder="Skill Title"
+                                        onchange="updateSkill('{{ section_id }}', '{{ skill.title }}', this.value)">
+                                    <div class="skill-colors">
+                                        <div class="color-input-group">
+                                            <label>Background</label>
+                                            <input type="color" 
+                                                class="color-picker"
+                                                value="{{ skill.background_color }}"
+                                                onchange="updateSkillColor('{{ section_id }}', '{{ skill.title }}', 'background', this.value)">
+                                        </div>
+                                        <div class="color-input-group">
+                                            <label>Border</label>
+                                            <input type="color" 
+                                                class="color-picker"
+                                                value="{{ skill.border_color }}"
+                                                onchange="updateSkillColor('{{ section_id }}', '{{ skill.title }}', 'border', this.value)">
+                                        </div>
+                                    </div>
+                                    <div class="skill-flag">
+                                        <label class="flag-toggle">
+                                            <input type="checkbox" 
+                                                {% if skill.is_new %}checked{% endif %}
+                                                onchange="updateSkillFlag('{{ section_id }}', '{{ skill.title }}', this.checked)">
+                                            Flag as new
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="skill-card add-skill-card" onclick="addNewSkill('{{ section_id }}')">
+                                    <div class="add-skill-content">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Add Skill</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="tab-content" id="messages">
+            <div class="profile-section">
+                <div class="content-container content-container-small">
+                    <p class="placeholder-text">Coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Save Button -->
+    <div class="save-button-container">
+        <button id="addSectionBtn" onclick="addNewSection()">
+            <i class="fas fa-plus"></i>
+            Add New Section
+        </button>
+        <button onclick="saveAllChanges()" class="save-btn">
+            <i class="fas fa-save"></i>
+            Save Changes
+        </button>
+    </div>
+</div>
+
+<style>
+.profile-container {
+    width: 100%;
+    padding: 0 20px 80px 20px;
+    position: relative;
+}
+
+.secondary-nav {
+    display: flex;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.nav-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.nav-tab i {
+    font-size: 1.1em;
+}
+
+.nav-tab:hover {
+    background: #f1f5f9;
+    color: #1a2b3c;
+}
+
+.nav-tab.active {
+    background: #3498db;
+    color: white;
+}
+
+.content-sections {
+    position: relative;
+    width: 100%;
+}
+
+.tab-content {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.content-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.content-container-small {
+    max-width: 800px;
+}
+
+.content-container-large {
+    max-width: 1200px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.input-group {
+    margin-bottom: 24px;
+}
+
+.input-group:last-child {
+    margin-bottom: 0;
+}
+
+.label-container {
+    color: #1a2b3c;
+    font-size: 1.1em;
+    font-weight: 500;
+    min-width: 140px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.input-with-toggle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.input-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 48px;
+    transition: all 0.2s ease;
+}
+
+.input-container:hover {
+    background-color: #fff;
+    border-color: #cbd5e1;
+}
+
+.input-container:focus-within {
+    background-color: #fff;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.input-container i {
+    color: #64748b;
+    margin-right: 12px;
+    font-size: 1.1em;
+}
+
+.input-container input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #1a2b3c;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.input-container input::placeholder {
+    color: #94a3b8;
+    font-weight: normal;
+}
+
+.input-container input:focus {
+    outline: none;
+}
+
+/* Disabled state styles */
+.input-container {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+}
+
+.input-container.disabled,
+.input-container:has(input:disabled) {
+    background-color: #f8f9fa;
+    border-color: #e2e8f0;
+}
+
+.input-container.disabled i,
+.input-container.disabled input,
+.input-container:has(input:disabled) i,
+.input-container:has(input:disabled) input {
+    color: #94a3b8;
+}
+
+input:disabled {
+    cursor: not-allowed;
+    background: transparent !important;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Switch styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e2e8f0;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:checked + .slider {
+    background-color: #3498db;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #3498db;
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+/* Test button styles */
+.test-link-btn {
+    height: 48px;
+    width: 48px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-link-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    color: #3498db;
+    border-color: #3498db;
+}
+
+.test-link-btn:disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+/* URL validation styles */
+input[type="url"]:invalid {
+    border-color: #ef4444;
+}
+
+input[type="url"]:invalid:focus {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+/* Override any browser defaults */
+input[type="text"],
+input[type="url"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent !important;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent !important;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #1a2b3c;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #1a2b3c;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+#short_description {
+    min-height: 96px;
+}
+
+#long_description {
+    min-height: 192px;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group textarea::placeholder {
+    color: #94a3b8;
+    font-weight: normal;
+}
+
+.char-counter {
+    float: right;
+    color: #94a3b8;
+    font-size: 0.9em;
+    font-weight: normal;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.char-counter.limit {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+.save-button-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#addSectionBtn {
+    display: none;  /* Hidden by default */
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+}
+
+#addSectionBtn:hover {
+    background: #27ae60;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+#addSectionBtn.visible {
+    display: flex;
+}
+
+#addSectionBtn.disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#addSectionBtn.disabled:hover {
+    background: #95a5a6;
+    transform: none;
+    box-shadow: none;
+}
+
+.skills-header {
+    display: none;  /* Hide the original header space */
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.save-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.placeholder-text {
+    color: #94a3b8;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Help icon button */
+.help-icon {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 8px;
+    cursor: help;
+    color: #94a3b8;
+    font-size: 0.9em;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.help-icon:hover {
+    color: #3498db;
+}
+
+/* Tooltip styles */
+.help-icon[data-tooltip] {
+    position: relative;
+}
+
+.help-icon[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: #1a2b3c;
+    color: white;
+    font-size: 0.8em;
+    font-weight: normal;
+    white-space: nowrap;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.help-icon[data-tooltip]::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a2b3c;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.help-icon[data-tooltip]:hover::after,
+.help-icon[data-tooltip]:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-8px);
+}
+
+/* Panel specific styles */
+.panel-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+.description-container {
+    position: relative;
+    width: 100%;
+}
+
+.description-container textarea {
+    width: 100%;
+    min-height: 72px;
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #1a2b3c;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.description-container textarea:focus {
+    background-color: white;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.description-container .char-counter {
+    position: absolute;
+    top: -24px;
+    right: 0;
+    color: #94a3b8;
+    font-size: 0.85em;
+    font-weight: normal;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.description-container .char-counter.limit {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+/* Select styles */
+.input-container select {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #1a2b3c;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+}
+
+.input-container select:focus {
+    outline: none;
+}
+
+.input-container:has(select) {
+    position: relative;
+}
+
+.input-container:has(select)::after {
+    content: '\f107';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+.what-im-doing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.what-im-doing-panel {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    cursor: move;
+}
+
+/* Remove this problematic rule that makes dragged panels disappear */
+/* 
+.what-im-doing-panel.dragging,
+.what-im-doing-panel.drag-over,
+.skills-section.dragging,
+.skills-section.drag-over {
+    display: none;
+}
+*/
+
+/* Add proper styles for dragging state */
+.what-im-doing-panel.dragging {
+    opacity: 0.6;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+    z-index: 100;
+}
+
+.what-im-doing-panel:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.panel-header {
+    padding: 6px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+}
+
+.drag-handle:hover {
+    color: #3498db;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.panel-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.panel-content .input-container {
+    margin-bottom: 0;
+}
+
+.panel-content .description-container {
+    margin-bottom: 0;
+    position: relative;
+}
+
+.panel-content .description-container textarea {
+    width: 100%;
+    min-height: 72px;
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #1a2b3c;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.panel-content .description-container textarea:focus {
+    background-color: white;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.panel-content .description-container .char-counter {
+    position: absolute;
+    top: -24px;
+    right: 0;
+    color: #94a3b8;
+    font-size: 0.85em;
+    font-weight: normal;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.panel-content .description-container .char-counter.limit {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+/* Empty/Disabled State */
+.what-im-doing-panel:not(:has(input:checked)) {
+    background: #f8fafc;
+    border-style: dashed;
+}
+
+.what-im-doing-panel:not(:has(input:checked)):hover {
+    background: white;
+    border-style: solid;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .what-im-doing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .what-im-doing-grid {
+        grid-template-columns: 1fr;
+        padding: 0;
+    }
+    
+    .panel-content {
+        padding: 20px;
+    }
+}
+
+/* Enhanced Input States */
+.panel-content .input-container:has(input:not(:disabled)):hover {
+    border-color: #3498db;
+    background-color: white;
+}
+
+.panel-content .input-container:has(input:disabled) {
+    background-color: #f8fafc;
+    border-style: dashed;
+}
+
+/* Label Styles */
+.panel-content select {
+    color: #64748b;
+}
+
+.panel-content select:not([value=""]) {
+    color: #1a2b3c;
+}
+
+.panel-content select option {
+    color: #1a2b3c;
+}
+
+/* Save Button Enhancement */
+.save-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgba(52, 152, 219, 0.2);
+}
+
+/* Additional styles for save notification */
+.save-notification {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+    z-index: 1000;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+}
+
+/* Skills Section Styles */
+.skills-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.skills-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    width: 100%;
+}
+
+.section-title {
+    flex: 1;
+    font-size: 1.1em;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: #1a2b3c;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.section-title:focus {
+    outline: none;
+}
+
+.move-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.move-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.move-btn:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.move-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    color: #3498db;
+    border-color: #3498db;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+}
+
+.move-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(52, 152, 219, 0.1);
+}
+
+.delete-section-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 8px;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    opacity: 0.8;
+}
+
+.delete-section-btn:hover {
+    background: #fef2f2;
+    color: #ef4444;
+    border-color: #ef4444;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+    opacity: 1;
+}
+
+.delete-section-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
+}
+
+.delete-section-btn:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    padding: 12px;
+    width: 100%;
+}
+
+#skills .skill-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: move;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#skills .skill-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 6px 8px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 8px;
+}
+
+#skills .drag-handle {
+    color: #94a3b8;
+    cursor: grab;
+    padding: 2px;
+}
+
+#skills .upload-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#skills .upload-overlay:hover {
+    color: #3498db;
+    background: #f1f5f9;
+}
+
+#skills .delete-skill-btn {
+    color: #ef4444;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+#skills .delete-skill-btn:hover {
+    opacity: 1;
+}
+
+#skills .skill-image-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 65%;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#skills .skill-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+}
+
+#skills .skill-title {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 500;
+    text-align: center;
+    font-size: 0.9em;
+    color: #1a2b3c;
+    background: white;
+}
+
+#skills .skill-colors {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#skills .color-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+#skills .color-input-group label {
+    font-size: 0.75em;
+    color: #64748b;
+}
+
+#skills .color-picker {
+    width: 24px;
+    height: 24px;
+    padding: 1px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+#skills .skill-flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #f8fafc;
+}
+
+#skills .flag-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #64748b;
+    cursor: pointer;
+}
+
+#skills .flag-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+/* Skills section responsive design */
+@media (max-width: 1400px) {
+    .skills-sections {
+        max-width: 1000px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .skills-sections {
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 992px) {
+    .skills-sections {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+}
+
+.add-skill-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 200px;
+}
+
+.add-skill-card:hover {
+    border-color: #3498db;
+    background: white;
+    transform: translateY(-2px);
+}
+
+.add-skill-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+}
+
+.add-skill-content i {
+    font-size: 24px;
+}
+
+.add-skill-content span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Add these styles in the style section */
+.skill-card {
+    cursor: move;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-card.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.skill-card.drag-over {
+    border: 2px dashed #3498db;
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.skill-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Add this to your existing styles */
+.error-notification {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: #f44336;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+    z-index: 1000;
+}
+
+.error-notification i {
+    font-size: 1.2em;
+}
+
+/* Add these new styles for the SVG preview */
+.svg-preview-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.svg-preview {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    overflow: hidden;
+}
+
+.svg-preview svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.svg-input-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.svg-input-container .input-container {
+    margin-bottom: 0;
+    height: 42px;
+}
+
+.svg-input-container .input-container input {
+    font-size: 0.95em;
+    padding: 8px 12px;
+}
+
+.description-container {
+    margin-top: 8px;
+}
+
+.description-container textarea {
+    min-height: 72px;
+    padding: 12px;
+    font-size: 0.95em;
+}
+
+.description-container .char-counter {
+    position: absolute;
+    top: -24px;
+    right: 0;
+    color: #94a3b8;
+    font-size: 0.85em;
+    font-weight: normal;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+/* Add these new styles for the profile image upload */
+.profile-image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.profile-image-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 24px;  /* Changed from 50% to 24px for rounded corners */
+    overflow: hidden;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.profile-image-wrapper:hover {
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s ease;
+}
+
+.profile-image-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #94a3b8;
+    white-space: nowrap;
+    font-size: 0.9em;
+}
+
+.profile-image-wrapper .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.profile-image-wrapper:hover .upload-overlay {
+    opacity: 1;
+}
+
+.profile-image-wrapper .upload-overlay i {
+    font-size: 2em;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const shortDesc = document.getElementById('short_description');
+    const counter = document.getElementById('shortDescCounter');
+    
+    function updateCounter() {
+        const length = shortDesc.value.length;
+        counter.textContent = `${length}/200`;
+        counter.classList.toggle('limit', length >= 200);
+    }
+    
+    shortDesc.addEventListener('input', updateCounter);
+    updateCounter();
+
+    // Tab navigation
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            tab.classList.add('active');
+            const contentId = tab.getAttribute('data-tab');
+            document.getElementById(contentId).classList.add('active');
+        });
+    });
+
+    // Initialize disabled states on page load
+    ['github', 'linkedin'].forEach(id => {
+        const checkbox = document.getElementById(id + '_enabled');
+        if (checkbox) {
+            toggleInput(id);
+        }
+    });
+
+    // Initialize panel description counters
+    ['panel1', 'panel2', 'panel3', 'panel4'].forEach(panelId => {
+        const desc = document.getElementById(panelId + '_description');
+        const counter = document.getElementById(panelId + 'DescCounter');
+        
+        if (desc && counter) {
+            function updateCounter() {
+                const length = desc.value.length;
+                counter.textContent = `${length}/200`;
+                counter.classList.toggle('limit', length >= 200);
+            }
+            
+            desc.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+    });
+
+    // Add Section button visibility logic
+    const addSectionBtn = document.getElementById('addSectionBtn');
+    
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            updateAddSectionButtonVisibility();
+        });
+    });
+
+    function updateAddSectionButtonVisibility() {
+        const isSkillsTabActive = document.getElementById('skills').classList.contains('active');
+        const sectionsCount = document.querySelectorAll('.skills-section').length;
+        
+        addSectionBtn.classList.toggle('visible', isSkillsTabActive);
+        addSectionBtn.classList.toggle('disabled', sectionsCount >= 10);
+        
+        if (sectionsCount >= 10) {
+            addSectionBtn.title = 'Maximum number of sections reached';
+        } else {
+            addSectionBtn.title = 'Add new section';
+        }
+    }
+
+    // Initial visibility check
+    updateAddSectionButtonVisibility();
+    
+    // Initialize move buttons state
+    updateMoveButtons();
+
+    // Initialize drag and drop for skill cards
+    initializeSkillDragAndDrop();
+    
+    // Add observer to handle dynamically added skill cards
+    const skillsObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                initializeSkillDragAndDrop();
+            }
+        });
+    });
+    
+    const skillsContainer = document.querySelector('.skills-grid');
+    if (skillsContainer) {
+        skillsObserver.observe(skillsContainer, { childList: true });
+    }
+
+    // Initialize SVG previews
+    ['panel1', 'panel2', 'panel3', 'panel4'].forEach(panelId => {
+        updateSvgPreview(panelId);
+    });
+
+    // Initialize drag and drop for What I'm Doing panels
+    initializePanelDragAndDrop();
+    
+    // Add observer to handle dynamically added panels
+    const panelsObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                initializePanelDragAndDrop();
+            }
+        });
+    });
+    
+    const panelsContainer = document.querySelector('.what-im-doing-grid');
+    if (panelsContainer) {
+        panelsObserver.observe(panelsContainer, { childList: true });
+    }
+});
+
+function toggleInput(id) {
+    const checkbox = document.getElementById(id + '_enabled');
+    const input = document.getElementById(id);
+    const testButton = document.getElementById('test_' + id);
+    const container = input.closest('.input-container');
+    
+    input.disabled = !checkbox.checked;
+    if (testButton) {
+        testButton.disabled = !checkbox.checked;
+    }
+    
+    if (!checkbox.checked) {
+        if (id === 'github') {
+            input.value = 'https://github.com/';
+        } else if (id === 'linkedin') {
+            input.value = 'https://linkedin.com/in/';
+        }
+    }
+}
+
+function openProfileUrl(type) {
+    const input = document.getElementById(type);
+    const url = input.value.trim();
+    
+    if (url) {
+        window.open(url, '_blank');
+    }
+}
+
+function togglePanel(panelId) {
+    const checkbox = document.getElementById(panelId + '_enabled');
+    const inputs = document.querySelectorAll(`#${panelId}_inputs input, #${panelId}_inputs textarea, #${panelId}_inputs select`);
+    
+    inputs.forEach(input => {
+        input.disabled = !checkbox.checked;
+    });
+
+    // Sort panels after toggle
+    sortPanels();
+}
+
+function updatePanelNumbers() {
+    const panels = [...document.querySelectorAll('.what-im-doing-panel')];
+    
+    panels.forEach((panel, index) => {
+        const newPanelNum = index + 1;
+        const oldPanelNum = panel.getAttribute('id').replace('panel', '');
+        
+        // Update panel ID
+        panel.setAttribute('id', `panel${newPanelNum}`);
+        
+        // Update input IDs and names
+        const inputs = panel.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.id = input.id.replace(`panel${oldPanelNum}`, `panel${newPanelNum}`);
+            input.name = input.name.replace(`panel_${oldPanelNum}`, `panel_${newPanelNum}`);
+        });
+    });
+}
+
+function sortPanels() {
+    const panelsContainer = document.querySelector('.what-im-doing-grid');
+    const panels = [...document.querySelectorAll('.what-im-doing-panel')];
+    
+    // Sort panels: enabled first, then disabled
+    panels.sort((a, b) => {
+        const aEnabled = a.querySelector('input[type="checkbox"]').checked;
+        const bEnabled = b.querySelector('input[type="checkbox"]').checked;
+        if (aEnabled === bEnabled) return 0;
+        return aEnabled ? -1 : 1;
+    });
+    
+    // Reorder in DOM
+    panels.forEach(panel => panelsContainer.appendChild(panel));
+    
+    // Update panel numbers
+    updatePanelNumbers();
+}
+
+function updateSvgColor(svgContent) {
+    if (!svgContent) return svgContent;
+    return svgContent.replace(/fill="#000000"/g, 'fill="#ffd404"')
+                    .replace(/fill='#000000'/g, "fill='#ffd404'")
+                    .replace(/fill="#3498db"/g, 'fill="#ffd404"')
+                    .replace(/fill='#3498db'/g, "fill='#ffd404'")
+                    .replace(/fill="#10b981"/g, 'fill="#ffd404"')
+                    .replace(/fill='#10b981'/g, "fill='#ffd404'")
+                    .replace(/fill="#ffb800"/g, 'fill="#ffd404"')
+                    .replace(/fill='#ffb800'/g, "fill='#ffd404'")
+                    .replace(/fill="#FFFF00"/g, 'fill="#ffd404"')
+                    .replace(/fill='#FFFF00'/g, "fill='#ffd404'");
+}
+
+function showSaveNotification() {
+    const notification = document.createElement('div');
+    notification.className = 'save-notification';
+    notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        Profile updated successfully!
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function showErrorNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'error-notification';
+    notification.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        ${message}
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+async function saveAllChanges() {
+    try {
+        const updates = {
+            main_info: {
+                name: document.getElementById('name').value,
+                job_title: document.getElementById('job_title').value
+            },
+            contact_card: {
+                social_links: {
+                    github: {
+                        enabled: document.getElementById('github_enabled').checked,
+                        url: document.getElementById('github').value
+                    },
+                    linkedin: {
+                        enabled: document.getElementById('linkedin_enabled').checked,
+                        url: document.getElementById('linkedin').value
+                    }
+                }
+            },
+            about_me: {
+                short_description: document.getElementById('short_description').value,
+                long_description: document.getElementById('long_description').value
+            },
+            what_im_doing: {},
+            skills: {
+                sections: {}
+            }
+        };
+
+        // Add panels in their current order
+        const panels = [...document.querySelectorAll('.what-im-doing-panel')];
+        panels.forEach((panel, index) => {
+            const panelNum = index + 1;
+            const labelText = document.getElementById(`panel${panelNum}_label`).value;
+            const imageContent = document.getElementById(`panel${panelNum}_image`).value;
+            
+            updates.what_im_doing[`panel_${panelNum}`] = {
+                enabled: document.getElementById(`panel${panelNum}_enabled`).checked,
+                title: document.getElementById(`panel${panelNum}_title`).value,
+                description: document.getElementById(`panel${panelNum}_description`).value,
+                image: updateSvgColor(imageContent),
+                flag: {
+                    enabled: labelText !== "",
+                    text: labelText
+                }
+            };
+        });
+
+        // Validate and add skills sections
+        const sections = [...document.querySelectorAll('.skills-section')];
+        sections.forEach(section => {
+            const sectionId = section.getAttribute('data-section-id');
+            const sectionTitle = section.querySelector('.section-title').value;
+            
+            updates.skills.sections[sectionId] = {
+                title: sectionTitle,
+                skills: []
+            };
+            
+            const skills = section.querySelectorAll('.skill-card:not(.add-skill-card)');
+            skills.forEach(skill => {
+                const skillTitle = skill.getAttribute('data-skill-title');
+                const titleInput = skill.querySelector('.skill-title');
+                const image = skill.querySelector('.skill-image');
+                const backgroundColor = skill.querySelector('.color-picker[onchange*="background"]').value;
+                const borderColor = skill.querySelector('.color-picker[onchange*="border"]').value;
+                const isNew = skill.querySelector('.flag-toggle input').checked;
+                
+                updates.skills.sections[sectionId].skills.push({
+                    title: titleInput.value,
+                    image: image ? image.src.split('/').pop() : '',
+                    background_color: backgroundColor,
+                    border_color: borderColor,
+                    is_new: isNew
+                });
+            });
+        });
+
+        const response = await fetch('/profile/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updates)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save changes');
+        }
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            showSaveNotification();
+        } else {
+            throw new Error(result.detail || 'Failed to save changes');
+        }
+    } catch (error) {
+        console.error('Error saving changes:', error);
+        showErrorNotification(error.message || 'Error saving changes. Please try again.');
+    }
+}
+
+// Section Management
+function addNewSection() {
+    const sectionsContainer = document.getElementById('skillsSectionsContainer');
+    const sectionCount = sectionsContainer.children.length;
+    
+    if (sectionCount >= 10) {
+        alert('Maximum of 10 sections allowed');
+        return;
+    }
+    
+    const newSectionNum = sectionCount + 1;
+    const newSectionId = `section_${newSectionNum}`;
+    
+    // Create new section HTML
+    const newSection = document.createElement('div');
+    newSection.className = 'skills-section';
+    newSection.setAttribute('data-section-id', newSectionId);
+    
+    newSection.innerHTML = `
+        <div class="section-header">
+            <input type="text" class="section-title" 
+                value="New Section"
+                placeholder="Section Title"
+                onchange="updateSection('${newSectionId}')">
+            <div class="move-buttons">
+                <button type="button" class="move-btn" onclick="moveSection('${newSectionId}', 'up')" title="Move section up">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+                <button type="button" class="move-btn" onclick="moveSection('${newSectionId}', 'down')" title="Move section down">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <button class="delete-section-btn" onclick="deleteSection('${newSectionId}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <div class="skills-grid" data-section-id="${newSectionId}">
+            <div class="skill-card add-skill-card" onclick="addNewSkill('${newSectionId}')">
+                <div class="add-skill-content">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Skill</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add the new section to the container
+    sectionsContainer.appendChild(newSection);
+    
+    // Update section numbers and button states
+    updateSectionNumbers();
+    updateMoveButtons();
+    
+    // Initialize drag and drop for any existing skills in the new section
+    initializeSkillDragAndDrop();
+}
+
+function deleteSection(sectionId) {
+    if (!confirm('Are you sure you want to delete this section and all its skills?')) {
+        return;
+    }
+    
+    const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    if (section) {
+        // Add visual feedback before removal
+        section.style.opacity = '0';
+        section.style.transform = 'scale(0.95)';
+        section.style.transition = 'all 0.3s ease';
+        
+        // Remove after animation
+        setTimeout(() => {
+            section.remove();
+            
+            // Get all remaining sections
+            const sections = [...document.querySelectorAll('.skills-section')];
+            
+            // Renumber all sections starting from 1
+            sections.forEach((section, index) => {
+                const newSectionId = `section_${index + 1}`;
+                const oldSectionId = section.getAttribute('data-section-id');
+                
+                // Update section ID
+                section.setAttribute('data-section-id', newSectionId);
+                
+                // Update title input
+                const titleInput = section.querySelector('.section-title');
+                if (titleInput) {
+                    titleInput.setAttribute('onchange', `updateSection('${newSectionId}')`);
+                }
+                
+                // Update move buttons
+                const moveButtons = section.querySelectorAll('.move-btn');
+                moveButtons.forEach(button => {
+                    if (button.getAttribute('onclick').includes('up')) {
+                        button.setAttribute('onclick', `moveSection('${newSectionId}', 'up')`);
+                    } else {
+                        button.setAttribute('onclick', `moveSection('${newSectionId}', 'down')`);
+                    }
+                });
+                
+                // Update delete button
+                const deleteButton = section.querySelector('.delete-section-btn');
+                if (deleteButton) {
+                    deleteButton.setAttribute('onclick', `deleteSection('${newSectionId}')`);
+                }
+                
+                // Update skills grid
+                const skillsGrid = section.querySelector('.skills-grid');
+                if (skillsGrid) {
+                    skillsGrid.setAttribute('data-section-id', newSectionId);
+                }
+                
+                // Update add skill button
+                const addSkillButton = section.querySelector('.add-skill-card');
+                if (addSkillButton) {
+                    addSkillButton.setAttribute('onclick', `addNewSkill('${newSectionId}')`);
+                }
+            });
+            
+            // Update move buttons state
+            updateMoveButtons();
+        }, 300);
+    }
+}
+
+function updateSection(sectionId) {
+    const titleInput = document.querySelector(`[data-section-id="${sectionId}"] .section-title`);
+    const newTitle = titleInput.value.trim();
+    
+    if (!newTitle) {
+        alert('Section title cannot be empty');
+        titleInput.value = 'New Section';
+        return;
+    }
+}
+
+// Skill Management
+function addNewSkill(sectionId) {
+    try {
+        const section = document.querySelector(`.skills-section[data-section-id="${sectionId}"]`);
+        if (!section) {
+            throw new Error('Section not found');
+        }
+        
+        // Find the skills grid container
+        const skillsGrid = section.querySelector('.skills-grid');
+        if (!skillsGrid) {
+            throw new Error('Skills grid not found');
+        }
+        
+        // Generate a unique ID for the new skill
+        const uniqueId = `new_skill_${Date.now()}`;
+        
+        // Create new skill card
+        const skillCard = document.createElement('div');
+        skillCard.className = 'skill-card';
+        skillCard.setAttribute('draggable', 'true');
+        skillCard.setAttribute('data-skill-title', uniqueId);
+        
+        // Add skill card content - matching the exact template structure
+        skillCard.innerHTML = `
+            <div class="skill-header">
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <label class="upload-overlay">
+                    <i class="fas fa-upload"></i>
+                    <input type="file" 
+                        class="skill-image-upload" 
+                        accept="image/*, image/svg+xml"
+                        onchange="uploadSkillImage(event, '${sectionId}', '${uniqueId}')"
+                        style="display: none;">
+                </label>
+                <button class="delete-skill-btn" onclick="deleteSkill('${sectionId}', '${uniqueId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="skill-image-container">
+                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #94a3b8; white-space: nowrap;">Image goes here</span>
+            </div>
+            <input type="text" 
+                class="skill-title" 
+                value="New Skill"
+                placeholder="Skill Title"
+                onchange="updateSkill('${sectionId}', '${uniqueId}', this.value)">
+            <div class="skill-colors">
+                <div class="color-input-group">
+                    <label>Background</label>
+                    <input type="color" 
+                        class="color-picker"
+                        value="#ffffff"
+                        onchange="updateSkillColor('${sectionId}', '${uniqueId}', 'background', this.value)">
+                </div>
+                <div class="color-input-group">
+                    <label>Border</label>
+                    <input type="color" 
+                        class="color-picker"
+                        value="#000000"
+                        onchange="updateSkillColor('${sectionId}', '${uniqueId}', 'border', this.value)">
+                </div>
+            </div>
+            <div class="skill-flag">
+                <label class="flag-toggle">
+                    <input type="checkbox" 
+                        onchange="updateSkillFlag('${sectionId}', '${uniqueId}', this.checked)">
+                    Flag as new
+                </label>
+            </div>
+        `;
+        
+        // Find the add-skill-card and insert before it
+        const addSkillCard = skillsGrid.querySelector('.add-skill-card');
+        if (!addSkillCard) {
+            throw new Error('Add skill card not found');
+        }
+        
+        skillsGrid.insertBefore(skillCard, addSkillCard);
+        
+        // Focus the title input
+        const titleInput = skillCard.querySelector('.skill-title');
+        titleInput.focus();
+        titleInput.select(); // Select the default text for easy replacement
+        
+        // Initialize drag and drop for the new skill card
+        initializeSkillDragAndDrop();
+    } catch (error) {
+        console.error('Error adding skill:', error);
+        alert('Error adding skill. Please try again.');
+    }
+}
+
+async function updateSkill(sectionId, oldTitle, newTitle) {
+    if (!newTitle.trim()) {
+        alert('Skill title cannot be empty');
+        return;
+    }
+    
+    try {
+        // Find the skill card in the DOM
+        const skillCard = document.querySelector(`[data-section-id="${sectionId}"] [data-skill-title="${oldTitle}"]`);
+        if (!skillCard) {
+            throw new Error('Skill not found');
+        }
+        
+        // Update the title input value and data attribute
+        const titleInput = skillCard.querySelector('.skill-title');
+        if (titleInput) {
+            titleInput.value = newTitle.trim();
+            skillCard.setAttribute('data-skill-title', newTitle.trim());
+            
+            // Update all event handlers with the new title
+            const imageUpload = skillCard.querySelector('.skill-image-upload');
+            if (imageUpload) {
+                imageUpload.setAttribute('onchange', `uploadSkillImage(event, '${sectionId}', '${newTitle.trim()}')`);
+            }
+            
+            const deleteBtn = skillCard.querySelector('.delete-skill-btn');
+            if (deleteBtn) {
+                deleteBtn.setAttribute('onclick', `deleteSkill('${sectionId}', '${newTitle.trim()}')`);
+            }
+            
+            const colorPickers = skillCard.querySelectorAll('.color-picker');
+            colorPickers.forEach((picker, index) => {
+                const type = index === 0 ? 'background' : 'border';
+                picker.setAttribute('onchange', `updateSkillColor('${sectionId}', '${newTitle.trim()}', '${type}', this.value)`);
+            });
+            
+            const flagToggle = skillCard.querySelector('.flag-toggle input');
+            if (flagToggle) {
+                flagToggle.setAttribute('onchange', `updateSkillFlag('${sectionId}', '${newTitle.trim()}', this.checked)`);
+            }
+        }
+    } catch (error) {
+        console.error('Error updating skill:', error);
+        alert('Error updating skill. Please try again.');
+    }
+}
+
+async function updateSkillFlag(sectionId, skillTitle, isNew) {
+    try {
+        // Find the skill card in the DOM
+        const skillCard = document.querySelector(`[data-section-id="${sectionId}"] [data-skill-title="${skillTitle}"]`);
+        if (!skillCard) {
+            throw new Error('Skill not found');
+        }
+        
+        // Update the checkbox state
+        const checkbox = skillCard.querySelector('.flag-toggle input[type="checkbox"]');
+        if (checkbox) {
+            checkbox.checked = isNew;
+        }
+    } catch (error) {
+        console.error('Error updating skill flag:', error);
+        alert('Error updating skill flag. Please try again.');
+    }
+}
+
+async function updateSkillColor(sectionId, skillTitle, colorType, value) {
+    try {
+        // Find the skill card in the DOM
+        const skillCard = document.querySelector(`[data-section-id="${sectionId}"] [data-skill-title="${skillTitle}"]`);
+        if (!skillCard) {
+            throw new Error('Skill not found');
+        }
+        
+        // Update the color picker value
+        const colorPicker = skillCard.querySelector(`.color-input-group:${colorType === 'background' ? 'first' : 'last'}-child .color-picker`);
+        if (colorPicker) {
+            colorPicker.value = value;
+        }
+    } catch (error) {
+        console.error('Error updating skill color:', error);
+        alert('Error updating skill color. Please try again.');
+    }
+}
+
+// Utility Functions
+async function getCurrentSkills() {
+    const response = await fetch('/profile/skills/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})  // Empty object since we just want to get current skills
+    });
+    return await response.json();
+}
+
+async function updateSkillsConfig(skills) {
+    const response = await fetch('/profile/skills/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(skills)
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to update skills configuration');
+    }
+    
+    return await response.json();
+}
+
+async function moveSection(sectionId, direction) {
+    const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    const sections = [...document.querySelectorAll('.skills-section')];
+    const currentIndex = sections.indexOf(section);
+    
+    // Calculate new index
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    
+    // Check if move is possible
+    if (newIndex < 0 || newIndex >= sections.length) return;
+    
+    // Swap sections in DOM
+    const container = section.parentNode;
+    if (direction === 'up') {
+        container.insertBefore(section, sections[currentIndex - 1]);
+    } else {
+        container.insertBefore(section, sections[currentIndex + 1].nextSibling);
+    }
+    
+    // Update section numbers
+    updateSectionNumbers();
+    
+    // Update button states
+    updateMoveButtons();
+}
+
+function updateMoveButtons() {
+    const sections = document.querySelectorAll('.skills-section');
+    sections.forEach((section, index) => {
+        const upButton = section.querySelector('.move-btn:first-child');
+        const downButton = section.querySelector('.move-btn:last-child');
+        
+        upButton.disabled = index === 0;
+        downButton.disabled = index === sections.length - 1;
+    });
+}
+
+// Initialize button states when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    updateMoveButtons();
+});
+
+// Add these new functions before the existing moveSection function
+function sortSections() {
+    const sectionsContainer = document.getElementById('skillsSectionsContainer');
+    const sections = [...document.querySelectorAll('.skills-section')];
+    
+    // Sort sections: enabled first, then disabled
+    sections.sort((a, b) => {
+        const aIndex = parseInt(a.getAttribute('data-section-id').split('_')[1]);
+        const bIndex = parseInt(b.getAttribute('data-section-id').split('_')[1]);
+        return aIndex - bIndex;
+    });
+    
+    // Reorder in DOM
+    sections.forEach(section => sectionsContainer.appendChild(section));
+    
+    // Update section numbers
+    updateSectionNumbers();
+}
+
+function updateSectionNumbers() {
+    const sections = [...document.querySelectorAll('.skills-section')];
+    
+    sections.forEach((section, index) => {
+        const newSectionNum = index + 1;
+        const oldSectionId = section.getAttribute('data-section-id');
+        const newSectionId = `section_${newSectionNum}`;
+        
+        // Update section ID
+        section.setAttribute('data-section-id', newSectionId);
+        
+        // Update input IDs and names
+        const titleInput = section.querySelector('.section-title');
+        if (titleInput) {
+            titleInput.setAttribute('onchange', `updateSection('${newSectionId}')`);
+        }
+        
+        // Update move buttons
+        const moveButtons = section.querySelectorAll('.move-btn');
+        moveButtons.forEach(button => {
+            if (button.getAttribute('onclick').includes('up')) {
+                button.setAttribute('onclick', `moveSection('${newSectionId}', 'up')`);
+            } else {
+                button.setAttribute('onclick', `moveSection('${newSectionId}', 'down')`);
+            }
+        });
+        
+        // Update delete button
+        const deleteButton = section.querySelector('.delete-section-btn');
+        if (deleteButton) {
+            deleteButton.setAttribute('onclick', `deleteSection('${newSectionId}')`);
+        }
+        
+        // Update skills grid
+        const skillsGrid = section.querySelector('.skills-grid');
+        if (skillsGrid) {
+            skillsGrid.setAttribute('data-section-id', newSectionId);
+        }
+    });
+}
+
+// Add these new functions before the existing moveSection function
+function initializeSkillDragAndDrop() {
+    const skillCards = document.querySelectorAll('.skill-card:not(.add-skill-card)');
+    
+    skillCards.forEach(card => {
+        card.setAttribute('draggable', 'true');
+        
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    e.target.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-skill-title'));
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    const draggingCard = document.querySelector('.dragging');
+    if (!draggingCard) return;
+    
+    const skillCards = [...document.querySelectorAll('.skill-card:not(.add-skill-card)')];
+    const currentCard = e.target.closest('.skill-card:not(.add-skill-card)');
+    
+    if (!currentCard) return;
+    
+    const currentIndex = skillCards.indexOf(currentCard);
+    const draggingIndex = skillCards.indexOf(draggingCard);
+    
+    if (currentIndex > draggingIndex) {
+        currentCard.parentNode.insertBefore(draggingCard, currentCard.nextSibling);
+    } else {
+        currentCard.parentNode.insertBefore(draggingCard, currentCard);
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const draggingCard = document.querySelector('.dragging');
+    if (!draggingCard) return;
+    
+    draggingCard.classList.remove('dragging');
+}
+
+function addSkill(sectionId) {
+    try {
+        const section = document.querySelector(`.skills-section[data-section-id="${sectionId}"]`);
+        if (!section) {
+            throw new Error('Section not found');
+        }
+        
+        // Create new skill card
+        const skillCard = document.createElement('div');
+        skillCard.className = 'skill-card';
+        skillCard.setAttribute('data-section-id', sectionId);
+        skillCard.setAttribute('data-skill-title', '');
+        
+        // Add skill card content
+        skillCard.innerHTML = `
+            <div class="skill-header">
+                <div class="skill-image-container">
+                    <img src="/data/images/skills/default.webp" alt="Skill Image" class="skill-image">
+                    <input type="file" accept="image/*" class="image-upload" onchange="uploadSkillImage(event, '${sectionId}', this.closest('.skill-card').querySelector('.skill-title').value)">
+                </div>
+                <div class="skill-title-container">
+                    <input type="text" class="skill-title" placeholder="Skill Title" onchange="updateSkill('${sectionId}', this.value, this.value)">
+                </div>
+                <div class="skill-actions">
+                    <div class="flag-toggle">
+                        <input type="checkbox" id="new-flag-${sectionId}" onchange="updateSkillFlag('${sectionId}', this.value, this.checked)">
+                        <label for="new-flag-${sectionId}">New</label>
+                    </div>
+                    <button class="delete-skill-btn" onclick="deleteSkill('${sectionId}', this.closest('.skill-card').querySelector('.skill-title').value)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="skill-colors">
+                <div class="color-input-group">
+                    <label>Background Color</label>
+                    <input type="color" class="color-picker" value="#ffffff" onchange="updateSkillColor('${sectionId}', this.closest('.skill-card').querySelector('.skill-title').value, 'background', this.value)">
+                </div>
+                <div class="color-input-group">
+                    <label>Border Color</label>
+                    <input type="color" class="color-picker" value="#000000" onchange="updateSkillColor('${sectionId}', this.closest('.skill-card').querySelector('.skill-title').value, 'border', this.value)">
+                </div>
+            </div>
+        `;
+        
+        // Insert the new skill card before the add-skill-card
+        const addSkillCard = section.querySelector('.add-skill-card');
+        section.insertBefore(skillCard, addSkillCard);
+        
+        // Update the section's skill count
+        const skillCount = section.querySelectorAll('.skill-card:not(.add-skill-card)').length;
+        const countElement = section.querySelector('.skill-count');
+        if (countElement) {
+            countElement.textContent = `${skillCount} skills`;
+        }
+        
+        // Focus the title input
+        const titleInput = skillCard.querySelector('.skill-title');
+        titleInput.focus();
+    } catch (error) {
+        console.error('Error adding skill:', error);
+        alert('Error adding skill. Please try again.');
+    }
+}
+
+async function uploadSkillImage(event, sectionId, skillTitle) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+    }
+    
+    try {
+        // Show loading state
+        const skillCard = event.target.closest('.skill-card');
+        const imageContainer = skillCard.querySelector('.skill-image-container');
+        let existingImage = imageContainer.querySelector('.skill-image');
+        const placeholderText = imageContainer.querySelector('span');
+        
+        // If there's a placeholder text, hide it
+        if (placeholderText) {
+            placeholderText.style.display = 'none';
+        }
+        
+        // If there's an existing image, update its opacity
+        if (existingImage) {
+            existingImage.style.opacity = '0.5';
+        }
+
+        // Convert image to webp using canvas
+        const img = new Image();
+        const reader = new FileReader();
+        
+        reader.onload = async function(e) {
+            img.src = e.target.result;
+            await new Promise((resolve) => {
+                img.onload = resolve;
+            });
+
+            // Create canvas and convert to webp
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions (max 256x256)
+            let width = img.width;
+            let height = img.height;
+            if (width > 256 || height > 256) {
+                const ratio = Math.min(256 / width, 256 / height);
+                width *= ratio;
+                height *= ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to webp blob
+            canvas.toBlob(async (blob) => {
+                // Create new file with original name but .webp extension
+                const originalName = file.name.split('.')[0];
+                const webpFile = new File([blob], `${originalName}.webp`, { type: 'image/webp' });
+                
+                const formData = new FormData();
+                formData.append('image', webpFile);
+                formData.append('section_id', sectionId);
+                formData.append('skill_title', skillTitle);
+                
+                const response = await fetch('/profile/skills/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Clone the response to read it multiple times if needed
+                const responseClone = response.clone();
+                
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    // If JSON parsing fails, try to get the text from the clone
+                    const text = await responseClone.text();
+                    throw new Error(text || 'Failed to upload image');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(result.detail || 'Failed to upload image');
+                }
+                
+                if (result.status === 'success') {
+                    // If there's no existing image, create one
+                    if (!existingImage) {
+                        existingImage = document.createElement('img');
+                        existingImage.className = 'skill-image';
+                        existingImage.alt = skillTitle;
+                        imageContainer.appendChild(existingImage);
+                    }
+                    
+                    // Update image in UI with the new filename
+                    existingImage.src = `/data/images/skills/${result.filename}`;
+                    existingImage.style.opacity = '1';
+                    
+                    // If the colors are returned, update the color pickers
+                    if (result.colors) {
+                        const backgroundColorPicker = skillCard.querySelector('.color-picker[onchange*="background"]');
+                        const borderColorPicker = skillCard.querySelector('.color-picker[onchange*="border"]');
+                        
+                        if (backgroundColorPicker && result.colors.background_color) {
+                            backgroundColorPicker.value = result.colors.background_color;
+                            // Update any preview elements if needed
+                            const previewEl = skillCard.querySelector('.background-preview');
+                            if (previewEl) {
+                                previewEl.style.backgroundColor = result.colors.background_color;
+                            }
+                        }
+                        
+                        if (borderColorPicker && result.colors.border_color) {
+                            borderColorPicker.value = result.colors.border_color;
+                            // Update any preview elements if needed
+                            const previewEl = skillCard.querySelector('.border-preview');
+                            if (previewEl) {
+                                previewEl.style.borderColor = result.colors.border_color;
+                            }
+                            
+                            // Also update the card's border color for immediate visual feedback
+                            if (imageContainer) {
+                                imageContainer.style.borderColor = result.colors.border_color;
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error(result.detail || 'Failed to upload image');
+                }
+            }, 'image/webp', 0.85);
+        };
+        
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        alert(error.message || 'Error uploading image. Please try again.');
+        
+        // Restore original state on error
+        const skillCard = event.target.closest('.skill-card');
+        const imageContainer = skillCard.querySelector('.skill-image-container');
+        const existingImage = imageContainer.querySelector('.skill-image');
+        const placeholderText = imageContainer.querySelector('span');
+        
+        if (existingImage) {
+            existingImage.style.opacity = '1';
+        }
+        if (placeholderText) {
+            placeholderText.style.display = 'block';
+        }
+    }
+}
+
+function deleteSkill(sectionId, skillTitle) {
+    if (!confirm('Are you sure you want to delete this skill?')) {
+        return;
+    }
+    
+    try {
+        // Find the skill card in the DOM
+        const skillCard = document.querySelector(`[data-section-id="${sectionId}"] [data-skill-title="${skillTitle}"]`);
+        if (!skillCard) {
+            throw new Error('Skill not found');
+        }
+        
+        // Add visual feedback before removal
+        skillCard.style.opacity = '0';
+        skillCard.style.transform = 'scale(0.95)';
+        skillCard.style.transition = 'all 0.3s ease';
+        
+        // Remove after animation
+        setTimeout(() => {
+            skillCard.remove();
+            
+            // Update the section's skill count
+            const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+            if (section) {
+                const skillCount = section.querySelectorAll('.skill-card:not(.add-skill-card)').length;
+                const countElement = section.querySelector('.skill-count');
+                if (countElement) {
+                    countElement.textContent = `${skillCount} skills`;
+                }
+            }
+        }, 300);
+    } catch (error) {
+        console.error('Error deleting skill:', error);
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            Error deleting skill. Please try again.
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+function updateSvgPreview(panelId) {
+    const imageInput = document.getElementById(`${panelId}_image`);
+    const previewContainer = document.getElementById(`${panelId}_svg_preview`);
+    
+    if (!imageInput || !previewContainer) return;
+    
+    const svgContent = imageInput.value.trim();
+    if (!svgContent) {
+        previewContainer.innerHTML = '';
+        return;
+    }
+    
+    try {
+        // Update the preview with the SVG content
+        previewContainer.innerHTML = updateSvgColor(svgContent);
+    } catch (error) {
+        console.error('Error updating SVG preview:', error);
+        previewContainer.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>';
+    }
+}
+
+// Add this new function for profile image upload
+async function uploadProfileImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+    }
+    
+    try {
+        // Show loading state
+        const imageWrapper = event.target.closest('.profile-image-wrapper');
+        let existingImage = imageWrapper.querySelector('.profile-image');
+        const placeholderText = imageWrapper.querySelector('.profile-image-placeholder');
+        
+        // If there's a placeholder text, hide it
+        if (placeholderText) {
+            placeholderText.style.display = 'none';
+        }
+        
+        // If there's an existing image, update its opacity
+        if (existingImage) {
+            existingImage.style.opacity = '0.5';
+        }
+
+        // Convert image to webp using canvas
+        const img = new Image();
+        const reader = new FileReader();
+        
+        reader.onload = async function(e) {
+            img.src = e.target.result;
+            await new Promise((resolve) => {
+                img.onload = resolve;
+            });
+
+            // Create canvas and convert to webp
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions (max 800x800)
+            let width = img.width;
+            let height = img.height;
+            if (width > 800 || height > 800) {
+                const ratio = Math.min(800 / width, 800 / height);
+                width *= ratio;
+                height *= ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to webp blob
+            canvas.toBlob(async (blob) => {
+                const webpFile = new File([blob], 'profile.webp', { type: 'image/webp' });
+                
+                const formData = new FormData();
+                formData.append('file', webpFile);
+                
+                const response = await fetch('/profile/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Clone the response to read it multiple times if needed
+                const responseClone = response.clone();
+                
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    // If JSON parsing fails, try to get the text from the clone
+                    const text = await responseClone.text();
+                    throw new Error(text || 'Failed to upload image');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(result.detail || 'Failed to upload image');
+                }
+                
+                if (result.status === 'success') {
+                    // If there's no existing image, create one
+                    if (!existingImage) {
+                        existingImage = document.createElement('img');
+                        existingImage.className = 'profile-image';
+                        existingImage.alt = 'Profile Image';
+                        imageWrapper.insertBefore(existingImage, imageWrapper.firstChild);
+                    }
+                    
+                    // Update image in UI
+                    existingImage.src = `/data/images/profile.webp?t=${Date.now()}`; // Add timestamp to prevent caching
+                    existingImage.style.opacity = '1';
+                } else {
+                    throw new Error(result.detail || 'Failed to upload image');
+                }
+            }, 'image/webp', 0.85);
+        };
+        
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        alert(error.message || 'Error uploading image. Please try again.');
+        
+        // Restore original state on error
+        const imageWrapper = event.target.closest('.profile-image-wrapper');
+        const existingImage = imageWrapper.querySelector('.profile-image');
+        const placeholderText = imageWrapper.querySelector('.profile-image-placeholder');
+        
+        if (existingImage) {
+            existingImage.style.opacity = '1';
+        }
+        if (placeholderText) {
+            placeholderText.style.display = 'block';
+        }
+    }
+}
+
+function initializePanelDragAndDrop() {
+    const panels = document.querySelectorAll('.what-im-doing-panel');
+    
+    panels.forEach(panel => {
+        panel.setAttribute('draggable', 'true');
+        
+        panel.addEventListener('dragstart', handlePanelDragStart);
+        panel.addEventListener('dragend', handlePanelDragEnd);
+        panel.addEventListener('dragover', handlePanelDragOver);
+        panel.addEventListener('drop', handlePanelDrop);
+    });
+}
+
+function handlePanelDragStart(e) {
+    e.target.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', e.target.id);
+}
+
+function handlePanelDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handlePanelDragOver(e) {
+    e.preventDefault();
+    const draggingPanel = document.querySelector('.dragging');
+    if (!draggingPanel) return;
+    
+    const panels = [...document.querySelectorAll('.what-im-doing-panel')];
+    const currentPanel = e.target.closest('.what-im-doing-panel');
+    
+    if (!currentPanel) return;
+    
+    const currentIndex = panels.indexOf(currentPanel);
+    const draggingIndex = panels.indexOf(draggingPanel);
+    
+    if (currentIndex > draggingIndex) {
+        currentPanel.parentNode.insertBefore(draggingPanel, currentPanel.nextSibling);
+    } else {
+        currentPanel.parentNode.insertBefore(draggingPanel, currentPanel);
+    }
+}
+
+function handlePanelDrop(e) {
+    e.preventDefault();
+    const draggingPanel = document.querySelector('.dragging');
+    if (!draggingPanel) return;
+    
+    draggingPanel.classList.remove('dragging');
+    updatePanelNumbers();
+}
+</script>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/profile.js"></script>
+{% endblock %}

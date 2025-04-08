@@ -1,7 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from datetime import datetime
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, distinct

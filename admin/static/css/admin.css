@@ -95,6 +95,33 @@ body {
     background-color: #c0392b;
 }
 
+.version-info {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.creator-info {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.creator-info a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.creator-info a:hover {
+    color: #3498db;
+    text-decoration: underline;
+}
+
 /* Main Content Area */
 .admin-main {
     flex: 1;
@@ -197,12 +224,24 @@ body {
     background-position: center;
 }
 
+.profile-icon {
+    background-image: url('../images/profile.svg');
+}
+
+.portfolio-icon {
+    background-image: url('../images/portfolio.svg');
+}
+
 .messages-icon {
     background-image: url('../images/message.svg');
 }
 
 .visitors-icon {
     background-image: url('../images/visitors.svg');
+}
+
+.webhook-icon {
+    background-image: url('../images/webhook.svg');
 }
 
 /* Invert the icon colors to white */
@@ -761,7 +800,6 @@ tr.unread td:first-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
     padding-bottom: 16px;
     border-bottom: 1px solid #eee;
 }
@@ -804,4 +842,105 @@ tr.unread td:first-child {
 .time-range-select:focus {
     background: #e9ecef;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.what-im-doing-panel {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    cursor: move;
+}
+
+.what-im-doing-panel.dragging {
+    opacity: 0.6;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+    z-index: 100;
+}
+
+.what-im-doing-panel.drag-over {
+    border: 2px dashed #3498db;
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.what-im-doing-panel:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.what-im-doing-panel .drag-handle {
+    cursor: move;
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+/* Remove this problematic rule that makes dragged panels disappear */
+/* .what-im-doing-panel.dragging,
+.what-im-doing-panel.drag-over,
+.skills-section.dragging,
+.skills-section.drag-over {
+    display: none;
+} */
+
+/* Add proper styling for dragged panels */
+.what-im-doing-panel.dragging {
+    opacity: 0.6;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+    z-index: 100;
+}
+
+.what-im-doing-panel .drag-handle {
+    cursor: move;
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+/* Admin Footer */
+.admin-footer {
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    background-color: transparent;
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through to elements below */
+}
+
+.admin-footer .credit {
+    font-size: 13px;
+    color: rgba(180, 180, 180, 0.95);
+    font-weight: 400;
+}
+
+.admin-footer .credit a {
+    color: #3498db;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    pointer-events: auto; /* Make only the link clickable */
+}
+
+.admin-footer .credit a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .admin-footer {
+        width: 100%;
+    }
 } 
