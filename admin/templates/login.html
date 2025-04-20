@@ -23,32 +23,34 @@
             min-height: 100vh;
             margin: 0;
             font-family: 'Inter', sans-serif;
+            color: #333;
         }
         
         .login-container {
             background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
         }
         
         .login-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
         
         .login-header h1 {
             color: #333;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             margin: 0;
+            font-weight: 600;
         }
         
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
         .form-group {
@@ -58,36 +60,41 @@
         }
         
         .form-group label {
-            color: #666;
-            font-size: 0.9rem;
+            color: #555;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
         
         .form-group input {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 0.85rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
         }
         
         .form-group input:focus {
             outline: none;
             border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
         }
         
         .login-button {
             background: #007bff;
             color: white;
             border: none;
-            padding: 0.75rem;
-            border-radius: 4px;
+            padding: 0.85rem;
+            border-radius: 8px;
             font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.25);
         }
         
         .login-button:hover {
-            background: #0056b3;
+            background: #0069d9;
         }
         
         .error-message {
@@ -95,13 +102,175 @@
             font-size: 0.9rem;
             text-align: center;
             margin-top: 1rem;
+            background-color: rgba(220, 53, 69, 0.1);
+            padding: 0.7rem;
+            border-radius: 6px;
+        }
+        
+        /* Help section */
+        .help-section {
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .collapsible-toggle {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 1.25rem 0;
+            color: #007bff;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+        
+        .toggle-arrow {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+        
+        .collapsible-toggle.active .toggle-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            padding: 0 0.25rem;
+        }
+        
+        .collapsible-content.active {
+            max-height: 700px;
+        }
+        
+        .collapsible-content p {
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-interface {
+            margin: 1.5rem 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f1f1;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 0.65rem 1.2rem;
+            font-size: 0.95rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .tab-btn:hover {
+            background: #e9e9e9;
+        }
+        
+        .tab-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.25);
+        }
+        
+        .tab-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+        
+        .tab-content {
+            position: relative;
+        }
+        
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .command-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        
+        .command-box h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.95rem;
+            color: #444;
+            font-weight: 600;
+        }
+        
+        .command-box code {
+            display: block;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            padding: 0.8rem;
+            background: #f1f1f1;
+            border-radius: 6px;
+            color: #333;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+        
+        .security-note {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        
+        .security-note p {
+            margin: 0;
+            color: #664d03;
+        }
+        
+        .security-note strong {
+            color: #664d03;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>Portfolio Admin</h1>
+            <h1>Bonnici Portfolio</h1>
         </div>
         
         <form class="login-form" method="POST" action="/login">
@@ -118,6 +287,87 @@
             </div>
             {% endif %}
         </form>
+        
+        <div class="help-section">
+            <button class="collapsible-toggle">
+                <span>Need a token?</span>
+                <span class="toggle-arrow">&#9662;</span>
+            </button>
+            
+            <div class="collapsible-content">
+                <p>Select your environment to see how to generate an admin token:</p>
+                
+                <div class="tab-interface">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="local">
+                            <img src="{{ url_for('static', path='/images/python.svg') }}" alt="Python" class="tab-icon">
+                            <span>Local</span>
+                        </button>
+                        <button class="tab-btn" data-tab="docker">
+                            <img src="{{ url_for('static', path='/images/docker.svg') }}" alt="Docker" class="tab-icon">
+                            <span>Docker</span>
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="local-tab">
+                            <div class="command-box">
+                                <h4>Local Development:</h4>
+                                <code>pdm run generate_admin_password</code>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane" id="docker-tab">
+                            <div class="command-box">
+                                <h4>Generate Token:</h4>
+                                <code>docker compose exec admin pdm run generate_admin_password</code>
+                            </div>
+                            
+                            <div class="command-box">
+                                <h4>Read Token on container startup:</h4>
+                                <code>docker compose logs admin</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="security-note">
+                    <p><strong>Security Note:</strong> Save your token securely - it will only be shown once. Your session will remain valid for 6 months.</p>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle for collapsible section
+            const toggleButton = document.querySelector('.collapsible-toggle');
+            const collapsibleContent = document.querySelector('.collapsible-content');
+            
+            toggleButton.addEventListener('click', function() {
+                toggleButton.classList.toggle('active');
+                collapsibleContent.classList.toggle('active');
+            });
+            
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding tab content
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(tabName + '-tab').classList.add('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

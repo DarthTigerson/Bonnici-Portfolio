@@ -2,3 +2,6 @@
 __pycache__
 *.DS_Store
 bonnici_portfolio.db
+config.json
+data/images/skills/*.webp
+profile.webp

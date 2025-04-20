@@ -1,23 +1,43 @@
 <!-- Sidebar Navigation -->
 <nav class="admin-sidebar">
     <div class="sidebar-header">
-        <h1>Admin Panel</h1>
+        <h1><a href="/" class="header-link">Portfolio Panel</a></h1>
     </div>
     <ul class="sidebar-nav">
-        <li class="nav-item {% if request.path == '/admin/messages' %}active{% endif %}">
+        <li class="nav-item {% if request.path == '/profile' %}active{% endif %}">
+            <a href="/profile">
+                <span class="icon profile-icon"></span>
+                Profile
+            </a>
+        </li>
+        <li class="nav-item {% if request.path == '/portfolio' %}active{% endif %}">
+            <a href="/portfolio">
+                <span class="icon portfolio-icon"></span>
+                Projects
+            </a>
+        </li>
+        <li class="nav-item {% if request.path == '/webhooks' %}active{% endif %}">
+            <a href="/webhooks">
+                <span class="icon webhook-icon"></span>
+                Webhooks
+            </a>
+        </li>
+        <li class="nav-item {% if request.path == '/messages' %}active{% endif %}">
             <a href="/messages">
                 <span class="icon messages-icon"></span>
                 Messages
             </a>
         </li>
-        <li class="nav-item {% if request.path == '/admin/visitors' %}active{% endif %}">
-            <a href="/admin/visitors">
+        <li class="nav-item {% if request.path == '/visitors' %}active{% endif %}">
+            <a href="/visitors">
                 <span class="icon visitors-icon"></span>
                 Visitors
             </a>
         </li>
     </ul>
     <div class="sidebar-footer">
-        <a href="/admin/logout" class="logout-btn">Logout</a>
+        <a href="/logout" class="logout-btn">Logout</a>
     </div>
+    <div class="creator-info">Made By <a href="https://thomas.bonnici.xyz" target="_blank">Thomas Bonnici</a></div>
+    <div class="version-info">v0.4.1</div>
 </nav>

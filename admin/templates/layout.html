@@ -17,34 +17,88 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <title>Admin Panel | Portfolio</title>
+    <style>
+        /* Mobile warning overlay */
+        .mobile-warning-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(33, 43, 54, 0.98);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .warning-content {
+            max-width: 500px;
+            background-color: #1a2532;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .warning-icon {
+            font-size: 64px;
+            color: #ffc107;
+            margin-bottom: 20px;
+        }
+        
+        .warning-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .warning-message {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .warning-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .warning-button:hover {
+            background-color: #0069d9;
+        }
+    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="admin-sidebar">
-            <div class="sidebar-header">
-                <a href="/" class="header-link">
-                    <h1>Admin Panel</h1>
-                </a>
+    <!-- Mobile Warning Overlay -->
+    <div class="mobile-warning-overlay" id="mobileWarning">
+        <div class="warning-content">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <ul class="sidebar-nav">
-                <li class="nav-item {% if request.url.path == '/messages' %}active{% endif %}">
-                    <a href="/messages">
-                        <span class="icon messages-icon"></span>
-                        Messages
-                    </a>
-                </li>
-                <li class="nav-item {% if request.url.path == '/visitors' %}active{% endif %}">
-                    <a href="/visitors">
-                        <span class="icon visitors-icon"></span>
-                        Visitors
-                    </a>
-                </li>
-            </ul>
-            <div class="sidebar-footer">
-                <a href="/logout" class="logout-btn">Logout</a>
-            </div>
+            <h2 class="warning-title">Desktop View Recommended</h2>
+            <p class="warning-message">
+                This interface was not designed to fit on mobile screens.
+                Please open in a desktop environment for the best experience.
+            </p>
+            <button class="warning-button" id="continueAnyway">Continue Anyway</button>
         </div>
+    </div>
+
+    <div class="admin-container">
+        <!-- Include Navbar -->
+        {% include "navbar.html" %}
 
         <!-- Main Content Area -->
         <main class="admin-main">
@@ -66,5 +120,40 @@
     <!-- Custom JS -->
     <script src="/static/js/admin.js" defer></script>
     {% block extra_scripts %}{% endblock %}
+    
+    <script>
+        // Mobile warning overlay logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileWarning = document.getElementById('mobileWarning');
+            const continueButton = document.getElementById('continueAnyway');
+            const minWidth = 1120; // Minimum width in pixels
+            
+            // Function to check window width and show/hide warning
+            function checkWidth() {
+                if (window.innerWidth < minWidth) {
+                    // Check if user has already dismissed warning
+                    const hasAccepted = localStorage.getItem('acceptedMobileWarning');
+                    if (!hasAccepted) {
+                        mobileWarning.style.display = 'flex';
+                    }
+                } else {
+                    mobileWarning.style.display = 'none';
+                }
+            }
+            
+            // Handle continue button click
+            continueButton.addEventListener('click', function() {
+                mobileWarning.style.display = 'none';
+                // Save dismissal in localStorage (remembers for current session)
+                localStorage.setItem('acceptedMobileWarning', 'true');
+            });
+            
+            // Check width on load
+            checkWidth();
+            
+            // Check width on resize
+            window.addEventListener('resize', checkWidth);
+        });
+    </script>
 </body>
 </html>

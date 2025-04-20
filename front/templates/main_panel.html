@@ -4,6 +4,9 @@
     <nav class="main-nav">
         <ul class="nav-list">
             <li class="nav-item active"><a href="#about">About</a></li>
+            {% if config.portfolio.enabled %}
+            <li class="nav-item"><a href="#portfolio">Projects</a></li>
+            {% endif %}
             <li class="nav-item"><a href="#contact">Contact</a></li>
         </ul>
     </nav>
@@ -14,219 +17,209 @@
         <section id="about" class="content-section">
             <h1 class="section-title">About Me</h1>
             <div class="section-content">
-                <p>I am a dedicated developer with 10 years of experience in the iGaming industry, specializing in automation, web applications, and infrastructure management.</p>
+                <p>{{ config.about_me.short_description }}</p>
                 
                 <div class="expandable-content" id="about-expandable" style="display: none;">
-                    <p>My journey through SysOps, Automation Engineering, and Backend Development roles has equipped me with a comprehensive understanding of technology ecosystems and the expertise to deliver robust, scalable solutions.</p>
-                    
-                    <p>I'm passionate about leveraging automation to eliminate repetitive tasks and enhance efficiency across systems. This drive fuels both my professional projects and personal endeavors, where I continuously seek opportunities to streamline processes and create innovative applications.</p>
-                    
-                    <p>When I'm not coding, you'll find me exploring new technologies and developing creative solutions to everyday challenges. I thrive in environments where problem-solving and technical innovation intersect to create meaningful impact through technology.</p>
+                    {% for paragraph in config.about_me.long_description.split('\n\n') %}
+                        {% if paragraph %}
+                            <p>{{ paragraph }}</p>
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 
+                {% if config.about_me.long_description %}
                 <button id="read-more-btn" class="read-more-btn">Read More</button>
+                {% endif %}
             </div>
         </section>
         
         <!-- What I'm Doing Section -->
+        {% if config.what_im_doing.values() | selectattr("enabled", "eq", true) | list %}
         <section id="services" class="content-section">
             <h2 class="section-title">What I'm Doing</h2>
             <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon ai-rag-icon"></div>
-                    <h3 class="service-title">AI RAGs</h3>
-                    <p class="service-description">Studying how to build and maintain AI RAGs for specific need.</p>
-                    <div class="in-progress-badge">Learning</div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon web-scraping-icon"></div>
-                    <h3 class="service-title">Web Scraping</h3>
-                    <p class="service-description">Building and maintaining web scraping tools to extract data from websites.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon web-apps-icon"></div>
-                    <h3 class="service-title">Web Apps</h3>
-                    <p class="service-description">Custom web apps tailered for specific needs, built in FastAPI.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon automation-icon"></div>
-                    <h3 class="service-title">Automation</h3>
-                    <p class="service-description">Building and maintaining automation tools to automate tedius, repetative and boring tasks.</p>
-                </div>
+                {% for panel_id, panel in config.what_im_doing.items() %}
+                    {% if panel.enabled %}
+                    <div class="service-card">
+                        <div class="service-icon">{{ panel.image | safe }}</div>
+                        <h3 class="service-title">{{ panel.title }}</h3>
+                        <p class="service-description">{{ panel.description }}</p>
+                        {% if panel.flag.enabled and panel.flag.text %}
+                            <div class="in-progress-badge">{{ panel.flag.text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </section>
+        {% endif %}
         
         <!-- Skills Section -->
+        {% if config.get('skills') and config.skills.get('sections') and config.skills.sections.items() %}
         <section id="skills" class="content-section">
             <h2 class="section-title">Skills</h2>
             
-            <!-- Backend Technologies -->
+            {% for section_id, section in config.skills.sections.items() %}
+            <!-- {{ section.title }} -->
             <div class="skills-category">
-                <h3 class="category-title">Backend Technologies</h3>
+                <h3 class="category-title">{{ section.title }}</h3>
                 <div class="skills-grid">
-                    <div class="skill-item rust">
-                        <div class="skill-icon rust-icon"></div>
-                        <div class="skill-name">Rust</div>
+                    {% for skill in section.skills %}
+                    <div class="skill-item skill-item-{{ skill.title|lower }}" data-background-color="{{ skill.background_color }}" data-border-color="{{ skill.border_color }}">
+                        <div class="skill-icon">
+                            <img src="/data/images/skills/{{ skill.image }}" alt="{{ skill.title }}">
+                        </div>
+                        <div class="skill-name">{{ skill.title }}</div>
+                        {% if skill.is_new %}
                         <div class="new-badge">New</div>
+                        {% endif %}
                     </div>
-                    <div class="skill-item fastapi">
-                        <div class="skill-icon fastapi-icon"></div>
-                        <div class="skill-name">FastAPI</div>
-                    </div>
-                    <div class="skill-item python">
-                        <div class="skill-icon python-icon"></div>
-                        <div class="skill-name">Python</div>
-                    </div>
-                    <div class="skill-item csharp">
-                        <div class="skill-icon csharp-icon"></div>
-                        <div class="skill-name">C#</div>
-                    </div>
-                    <div class="skill-item pandas">
-                        <div class="skill-icon pandas-icon"></div>
-                        <div class="skill-name">Pandas</div>
-                    </div>
-                    <div class="skill-item jinja">
-                        <div class="skill-icon jinja-icon"></div>
-                        <div class="skill-name">Jinja Templating</div>
-                    </div>
-                    <div class="skill-item selenium">
-                        <div class="skill-icon selenium-icon"></div>
-                        <div class="skill-name">Selenium</div>
-                    </div>
-                    <div class="skill-item pytest">
-                        <div class="skill-icon pytest-icon"></div>
-                        <div class="skill-name">Pytest</div>
-                    </div>   
+                    {% endfor %}
                 </div>
             </div>
-            
-            <!-- Frontend Technologies -->
-            <div class="skills-category">
-                <h3 class="category-title">Frontend Technologies</h3>
-                <div class="skills-grid">
-                    <div class="skill-item javascript">
-                        <div class="skill-icon javascript-icon"></div>
-                        <div class="skill-name">JavaScript</div>
+            {% endfor %}
+        </section>
+        {% endif %}
+    </div>
+    
+    <!-- Portfolio View - Contains Portfolio projects section -->
+    <div id="portfolio-view" class="view-state">
+        <!-- Portfolio Section -->
+        {% if config.portfolio.enabled %}
+        <section id="portfolio" class="content-section">
+            <h1 class="section-title">Projects</h1>
+            <div class="section-content">
+                {% if config.get('portfolio') and config.portfolio.get('projects') %}
+                <div class="portfolio-intro-tags">
+                    <span class="tech-tag selected" data-filter="all">All</span>
+                    
+                    {% set unique_tags = [] %}
+                    {% set display_tags = {} %}
+                    {% for project in config.portfolio.projects %}
+                        {% for tag in project.tags %}
+                            {% if tag.lower() not in unique_tags %}
+                                {% set _ = unique_tags.append(tag.lower()) %}
+                                {% set _ = display_tags.update({tag.lower(): tag}) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    
+                    {% for tag in unique_tags | sort %}
+                    <span class="tech-tag" data-filter="{{ tag }}">{{ display_tags[tag] }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="portfolio-grid columns-{{ config.portfolio.columns }}">
+                    {% for project in config.portfolio.projects %}
+                    {% if project.git_url %}
+                    <a href="{{ project.git_url }}" target="_blank" class="portfolio-card-link">
+                    {% endif %}
+                    <div class="portfolio-card" data-tags="{{ project.tags | map('lower') | join(' ') }}">
+                        <div class="portfolio-image">
+                            <img src="/data/images/portfolio/{{ project.image }}" alt="{{ project.title }}">
+                            {% if project.category %}
+                            <div class="portfolio-category">{{ project.category }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="portfolio-content">
+                            <div class="portfolio-text">
+                                <h3 class="portfolio-title">{{ project.title }}</h3>
+                                {% if config.portfolio.mode == "tags" %}
+                                <div class="portfolio-tech">
+                                    {% for tag in project.tags %}
+                                    <span class="tech-tag">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if config.portfolio.mode == "description" %}
+                                <p class="portfolio-description">{{ project.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-                    <div class="skill-item html">
-                        <div class="skill-icon html-icon"></div>
-                        <div class="skill-name">HTML</div>
+                    {% if project.git_url %}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <!-- Sample Portfolio Projects -->
+                <div class="portfolio-grid">
+                    <!-- Bonnici Portfolio -->
+                    <div class="portfolio-card" data-tags="python,fastapi,docker">
+                        <div class="portfolio-image">
+                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Bonnici Portfolio">
+                        </div>
+                        <div class="portfolio-content">
+                            <div class="portfolio-text">
+                                <h3 class="portfolio-title">Bonnici Portfolio</h3>
+                                <p class="portfolio-description">A sleek and modern portfolio website built with FastAPI, featuring dynamic content management and visitor tracking capabilities.</p>
+                            </div>
+                            <div class="portfolio-tags" style="display: none;">
+                                <span class="tech-tag-item" data-filter="python">Python</span>
+                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
+                                <span class="tech-tag-item" data-filter="docker">Docker</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="skill-item css">
-                        <div class="skill-icon css-icon"></div>
-                        <div class="skill-name">CSS</div>
+                    
+                    <!-- Hermes -->
+                    <div class="portfolio-card" data-tags="python,fastapi">
+                        <div class="portfolio-image">
+                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Hermes">
+                        </div>
+                        <div class="portfolio-content">
+                            <div class="portfolio-text">
+                                <h3 class="portfolio-title">Hermes</h3>
+                                <p class="portfolio-description">A messaging platform that allows for seamless communication between teams with real-time updates and notifications.</p>
+                            </div>
+                            <div class="portfolio-tags" style="display: none;">
+                                <span class="tech-tag-item" data-filter="python">Python</span>
+                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="skill-item wordpress">
-                        <div class="skill-icon wordpress-icon"></div>
-                        <div class="skill-name">Wordpress</div>
+                    
+                    <!-- Atlantis Home -->
+                    <div class="portfolio-card" data-tags="python,fastapi">
+                        <div class="portfolio-image">
+                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Atlantis Home">
+                        </div>
+                        <div class="portfolio-content">
+                            <div class="portfolio-text">
+                                <h3 class="portfolio-title">Atlantis Home</h3>
+                                <p class="portfolio-description">A smart home automation system with intuitive controls and scheduling capabilities for a modern living experience.</p>
+                            </div>
+                            <div class="portfolio-tags" style="display: none;">
+                                <span class="tech-tag-item" data-filter="python">Python</span>
+                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Simple Site Monitor -->
+                    <div class="portfolio-card" data-tags="python,fastapi,docker">
+                        <div class="portfolio-image">
+                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Simple Site Monitor">
+                        </div>
+                        <div class="portfolio-content">
+                            <div class="portfolio-text">
+                                <h3 class="portfolio-title">Simple Site Monitor</h3>
+                                <p class="portfolio-description">A lightweight monitoring solution that tracks website availability and performance metrics with customizable alerts.</p>
+                            </div>
+                            <div class="portfolio-tags" style="display: none;">
+                                <span class="tech-tag-item" data-filter="python">Python</span>
+                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
+                                <span class="tech-tag-item" data-filter="docker">Docker</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Databases -->
-            <div class="skills-category">
-                <h3 class="category-title">Databases</h3>
-                <div class="skills-grid">
-                    <div class="skill-item postgresql">
-                        <div class="skill-icon postgresql-icon"></div>
-                        <div class="skill-name">PostgreSQL</div>
-                    </div>
-                    <div class="skill-item sqlite">
-                        <div class="skill-icon sqlite-icon"></div>
-                        <div class="skill-name">SQLite</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Deployment & DevOps -->
-            <div class="skills-category">
-                <h3 class="category-title">Deployment & DevOps</h3>
-                <div class="skills-grid">
-                    <div class="skill-item docker">
-                        <div class="skill-icon docker-icon"></div>
-                        <div class="skill-name">Docker</div>
-                    </div>
-                    <div class="skill-item nginx-package-manager">
-                        <div class="skill-icon nginx-package-manager-icon"></div>
-                        <div class="skill-name">Nginx</div>
-                        <div class="new-badge">New</div>
-                    </div>
-                    <div class="skill-item digital-ocean">
-                        <div class="skill-icon digital-ocean-icon"></div>
-                        <div class="skill-name">Digital Ocean</div>
-                    </div>
-                    <div class="skill-item google-cloud">
-                        <div class="skill-icon google-cloud-icon"></div>
-                        <div class="skill-name">Google Cloud</div>
-                    </div>
-                    <div class="skill-item azure">
-                        <div class="skill-icon azure-icon"></div>
-                        <div class="skill-name">Azure</div>
-                    </div>
-                    <div class="skill-item hetzner">
-                        <div class="skill-icon hetzner-icon"></div>
-                        <div class="skill-name">Hetzner</div>
-                    </div>
-                    <div class="skill-item grafana">
-                        <div class="skill-icon grafana-icon"></div>
-                        <div class="skill-name">Grafana</div>
-                    </div>
-                    <div class="skill-item linux">
-                        <div class="skill-icon linux-icon"></div>
-                        <div class="skill-name">Linux</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Version Control -->
-            <div class="skills-category">
-                <h3 class="category-title">Version Control</h3>
-                <div class="skills-grid">
-                    <div class="skill-item git">
-                        <div class="skill-icon git-icon"></div>
-                        <div class="skill-name">Git</div>
-                    </div>
-                    <div class="skill-item github">
-                        <div class="skill-icon github-icon"></div>
-                        <div class="skill-name">Github</div>
-                    </div>
-                    <div class="skill-item gitlab">
-                        <div class="skill-icon gitlab-icon"></div>
-                        <div class="skill-name">Gitlab</div>
-                    </div>
-                    <div class="skill-item bitbucket">
-                        <div class="skill-icon bitbucket-icon"></div>
-                        <div class="skill-name">Bitbucket</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tools & Utilities -->
-            <div class="skills-category">
-                <h3 class="category-title">Tools & Utilities</h3>
-                <div class="skills-grid">
-                    <div class="skill-item cursor">
-                        <div class="skill-icon cursor-icon"></div>
-                        <div class="skill-name">Cursor IDE</div>
-                    </div>
-                    <div class="skill-item vscode">
-                        <div class="skill-icon vscode-icon"></div>
-                        <div class="skill-name">VS Code</div>
-                    </div>
-                    <div class="skill-item pdm">
-                        <div class="skill-icon pdm-icon"></div>
-                        <div class="skill-name">PDM</div>
-                    </div>
-                    <div class="skill-item iot">
-                        <div class="skill-icon iot-icon"></div>
-                        <div class="skill-name">IoT</div>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </section>
+        {% endif %}
     </div>
     
     <!-- Contact View - Contains only the Contact section -->
@@ -263,4 +256,246 @@
             </div>
         </section>
     </div>
+    
+    <!-- Footer (inside main-panel) -->
+    <div class="main-panel-footer">
+        <p class="credit">Made by <a href="https://thomas.bonnici.xyz" target="_blank">Thomas Bonnici</a></p>
+    </div>
 </div>
+
+<style>
+/* Portfolio grid column configuration */
+.portfolio-grid.columns-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.portfolio-grid.columns-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Make portfolio grid responsive */
+@media (max-width: 768px) {
+    .portfolio-grid.columns-2,
+    .portfolio-grid.columns-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Portfolio content modes */
+.portfolio-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.portfolio-tech .tech-tag {
+    background-color: rgba(254, 215, 2, 0.1);
+    color: #fed702;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Clickable portfolio card styles */
+.portfolio-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.portfolio-card-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.portfolio-card-link:hover .portfolio-title {
+    color: #fed702;
+}
+
+.portfolio-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.portfolio-content {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.portfolio-title {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.portfolio-text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.portfolio-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.portfolio-description {
+    margin-top: auto;
+    color: #555;
+    font-size: 14px;
+}
+
+/* Additional style for tag filtering */
+.portfolio-intro-tags .tech-tag {
+    background-color: rgba(254, 215, 2, 0.1);
+    color: #fed702;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tech-tag {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: rgba(254, 215, 2, 0.1);
+    color: #fed702;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.tech-tag.selected {
+    background-color: #fed702 !important;
+    color: black !important;
+}
+
+.portfolio-card-link.hidden,
+.portfolio-card.hidden {
+    display: none !important;
+}
+
+.skill-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Make portfolio grid responsive */
+@media (max-width: 768px) {
+    .portfolio-grid.columns-2,
+    .portfolio-grid.columns-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Portfolio content modes */
+</style>
+
+<script>
+// Tag filtering functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tagFilters = document.querySelectorAll('.portfolio-intro-tags .tech-tag');
+    
+    // Select ALL cards, not just the links
+    const projectCards = document.querySelectorAll('.portfolio-card');
+    
+    // Log for debugging
+    console.log('Available filters:');
+    tagFilters.forEach(tag => {
+        console.log('Filter:', tag.getAttribute('data-filter'), tag.textContent);
+    });
+    
+    console.log('Available cards and their tags:');
+    projectCards.forEach(card => {
+        console.log('Card tags:', card.getAttribute('data-tags'));
+    });
+    
+    // Add click event to each tag filter
+    tagFilters.forEach(tag => {
+        tag.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            console.log('Filter clicked:', filter);
+            
+            // Remove selected class from all tags
+            tagFilters.forEach(t => t.classList.remove('selected'));
+            
+            // Add selected class to clicked tag
+            this.classList.add('selected');
+            
+            // Show all projects if "All" is selected
+            if (filter === 'all') {
+                projectCards.forEach(card => {
+                    card.style.display = '';
+                });
+                return;
+            }
+            
+            // Filter projects based on selected tag
+            projectCards.forEach(card => {
+                const cardTags = card.getAttribute('data-tags');
+                console.log('Checking card tags:', cardTags);
+                
+                // Check if this card has the tag we're filtering for
+                if (cardTags && cardTags.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Apply background and border colors to skill items
+    const skillItems = document.querySelectorAll('.skill-item');
+    skillItems.forEach(item => {
+        const backgroundColor = item.getAttribute('data-background-color');
+        const borderColor = item.getAttribute('data-border-color');
+        
+        if (backgroundColor) {
+            item.style.backgroundColor = backgroundColor;
+        }
+        
+        if (borderColor) {
+            item.style.borderColor = borderColor;
+            item.style.borderWidth = '1px';
+            item.style.borderStyle = 'solid';
+        }
+    });
+});
+</script>

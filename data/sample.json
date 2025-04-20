@@ -1,0 +1,69 @@
+{
+    "main_info": {
+        "name": "Full Name",
+        "job_title": "Job Title"
+    },
+    "contact_card": {
+        "social_links": {
+            "github": {
+                "enabled": false,
+                "url": "https://github.com/"
+            },
+            "linkedin": {
+                "enabled": false,
+                "url": "https://linkedin.com/in/"
+            }
+        }
+    },
+    "about_me": {
+        "short_description": "Short Description",
+        "long_description": ""
+    },
+    "what_im_doing": {
+        "panel_1": {
+            "enabled": false,
+            "title": "",
+            "description": "",
+            "image": "",
+            "flag": {
+                "text": "",
+                "enabled": false
+            }
+        },
+        "panel_2": {
+            "enabled": false,
+            "title": "",
+            "description": "",
+            "image": "",
+            "flag": {
+                "text": "",
+                "enabled": false
+            }
+        },
+        "panel_3": {
+            "enabled": false,
+            "title": "",
+            "description": "",
+            "image": "",
+            "flag": {
+                "text": "",
+                "enabled": false
+            }
+        },
+        "panel_4": {
+            "enabled": false,
+            "title": "",
+            "description": "",
+            "image": "",
+            "flag": {
+                "text": "",
+                "enabled": false
+            }
+        }
+    },
+    "skills": {
+        "sections": {}
+    },
+    "portfolio": {
+    }
+}
