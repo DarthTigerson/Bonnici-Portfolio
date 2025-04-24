@@ -124,6 +124,107 @@
     });
 </script>
 
+{% if config.main_info.name == "Full Name" and config.main_info.job_title == "Job Title" %}
+<!-- Setup Mode - Only show welcome screen -->
+<div class="setup-container">
+    <div class="setup-card">
+        <h1>Welcome to your new portfolio!</h1>
+        <p>This site hasn't been customized yet.</p>
+        <p>Visit the admin panel to set up your portfolio:</p>
+        <a href="http://localhost:85" class="admin-button" target="_blank">Open Admin Panel</a>
+        <div class="setup-footer">
+            <p>Made by <a href="https://thomas.bonnici.xyz" target="_blank">Thomas Bonnici</a></p>
+            <p class="version">v0.4.2</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #111;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .setup-container {
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .setup-card {
+        background-color: #1e1e1e;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .setup-card h1 {
+        color: #fff;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .setup-card p {
+        color: rgba(255, 255, 255, 0.7);
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    
+    .admin-button {
+        display: inline-block;
+        background-color: #fed702;
+        color: #000;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .admin-button:hover {
+        background-color: #ffdf33;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(254, 215, 2, 0.3);
+    }
+    
+    .setup-footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .setup-footer p {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        margin: 5px 0;
+    }
+    
+    .setup-footer a {
+        color: #fed702;
+        text-decoration: none;
+    }
+    
+    .setup-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .version {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+</style>
+
+{% else %}
+<!-- Normal Mode - Show regular portfolio content -->
 <div class="container">
     {% include "left_panel.html" %}
     {% include "main_panel.html" %}
@@ -151,5 +252,7 @@
 <footer class="site-footer">
     <p class="credit">v0.4.2</p>
 </footer>
+
+{% endif %}
 
 {% endblock %}
