@@ -140,7 +140,9 @@
 <nav class="mobile-bottom-nav">
     <ul class="nav-list">
         <li class="nav-item active"><a href="#about">About</a></li>
-        <li class="nav-item"><a href="#portfolio">Portfolio</a></li>
+        {% if config.portfolio.enabled %}
+        <li class="nav-item"><a href="#portfolio">Projects</a></li>
+        {% endif %}
         <li class="nav-item"><a href="#contact">Contact</a></li>
     </ul>
 </nav>
