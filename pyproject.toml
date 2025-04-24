@@ -1,6 +1,6 @@
 [project]
 name = "bonnici_portfolio"
-version = "0.4.1"
+version = "0.4.2"
 description = "Bonnici's Portfolio"
 authors = [
     {name = "Thomas Bonnici", email = "thomas.bonnici@icloud.com"},
