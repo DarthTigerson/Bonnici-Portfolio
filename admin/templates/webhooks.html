@@ -112,6 +112,20 @@
 </div>
 
 <script>
+// Flag to track initialization state
+let isInitializing = true;
+
+// Function to highlight save button when changes are detected
+function highlightSaveButton() {
+    // Skip highlighting during initialization
+    if (isInitializing) return;
+    
+    const saveBtn = document.querySelector('.save-btn');
+    if (saveBtn) {
+        saveBtn.classList.add('needs-save');
+    }
+}
+
 // Toggle URL input when switch is toggled
 function toggleVisitorInput() {
     const enabled = document.getElementById('visitor_enabled').checked;
@@ -121,6 +135,11 @@ function toggleVisitorInput() {
     urlInput.disabled = !enabled;
     testBtn.disabled = !enabled;
     updateDisabledStyles();
+    
+    // Only highlight save button if not initializing
+    if (!isInitializing) {
+        highlightSaveButton();
+    }
 }
 
 function toggleMessageInput() {
@@ -131,6 +150,11 @@ function toggleMessageInput() {
     urlInput.disabled = !enabled;
     testBtn.disabled = !enabled;
     updateDisabledStyles();
+    
+    // Only highlight save button if not initializing
+    if (!isInitializing) {
+        highlightSaveButton();
+    }
 }
 
 // Test webhook functionality
@@ -219,6 +243,12 @@ async function saveWebhookSettings() {
         
         if (response.ok) {
             showSaveNotification('Webhook settings saved successfully!');
+            
+            // Remove needs-save class after successful save
+            const saveBtn = document.querySelector('.save-btn');
+            if (saveBtn) {
+                saveBtn.classList.remove('needs-save');
+            }
         } else {
             showErrorNotification(result.detail || 'Failed to save webhook settings.');
         }
@@ -230,6 +260,9 @@ async function saveWebhookSettings() {
 
 // Initialize toggles on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // We're initializing, don't highlight save button yet
+    isInitializing = true;
+    
     toggleVisitorInput();
     toggleMessageInput();
     
@@ -244,6 +277,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (messageUrl.value) {
         detectPlatform('message');
     }
+    
+    // Add input change listeners to highlight save button
+    visitorUrl.addEventListener('input', highlightSaveButton);
+    messageUrl.addEventListener('input', highlightSaveButton);
+    
+    document.getElementById('visitor_enabled').addEventListener('change', toggleVisitorInput);
+    document.getElementById('message_enabled').addEventListener('change', toggleMessageInput);
+    
+    // Done initializing, now changes should highlight the save button
+    setTimeout(() => {
+        isInitializing = false;
+    }, 100);
 });
 
 // URL validation helper
@@ -408,6 +453,24 @@ function updatePlatformIcon(iconElement, platform) {
     background-color: #2980b9;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.save-btn.needs-save {
+    animation: pulse 1.5s infinite;
+    background-color: #f39c12;
+    box-shadow: 0 2px 12px rgba(243, 156, 18, 0.5);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .webhooks-grid {
