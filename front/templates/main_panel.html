@@ -143,78 +143,9 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <!-- Sample Portfolio Projects -->
-                <div class="portfolio-grid">
-                    <!-- Bonnici Portfolio -->
-                    <div class="portfolio-card" data-tags="python,fastapi,docker">
-                        <div class="portfolio-image">
-                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Bonnici Portfolio">
-                        </div>
-                        <div class="portfolio-content">
-                            <div class="portfolio-text">
-                                <h3 class="portfolio-title">Bonnici Portfolio</h3>
-                                <p class="portfolio-description">A sleek and modern portfolio website built with FastAPI, featuring dynamic content management and visitor tracking capabilities.</p>
-                            </div>
-                            <div class="portfolio-tags" style="display: none;">
-                                <span class="tech-tag-item" data-filter="python">Python</span>
-                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
-                                <span class="tech-tag-item" data-filter="docker">Docker</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Hermes -->
-                    <div class="portfolio-card" data-tags="python,fastapi">
-                        <div class="portfolio-image">
-                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Hermes">
-                        </div>
-                        <div class="portfolio-content">
-                            <div class="portfolio-text">
-                                <h3 class="portfolio-title">Hermes</h3>
-                                <p class="portfolio-description">A messaging platform that allows for seamless communication between teams with real-time updates and notifications.</p>
-                            </div>
-                            <div class="portfolio-tags" style="display: none;">
-                                <span class="tech-tag-item" data-filter="python">Python</span>
-                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Atlantis Home -->
-                    <div class="portfolio-card" data-tags="python,fastapi">
-                        <div class="portfolio-image">
-                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Atlantis Home">
-                        </div>
-                        <div class="portfolio-content">
-                            <div class="portfolio-text">
-                                <h3 class="portfolio-title">Atlantis Home</h3>
-                                <p class="portfolio-description">A smart home automation system with intuitive controls and scheduling capabilities for a modern living experience.</p>
-                            </div>
-                            <div class="portfolio-tags" style="display: none;">
-                                <span class="tech-tag-item" data-filter="python">Python</span>
-                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Simple Site Monitor -->
-                    <div class="portfolio-card" data-tags="python,fastapi,docker">
-                        <div class="portfolio-image">
-                            <img src="https://kinsta.com/wp-content/uploads/2018/04/what-is-github-1-1-1024x512.png" alt="Simple Site Monitor">
-                        </div>
-                        <div class="portfolio-content">
-                            <div class="portfolio-text">
-                                <h3 class="portfolio-title">Simple Site Monitor</h3>
-                                <p class="portfolio-description">A lightweight monitoring solution that tracks website availability and performance metrics with customizable alerts.</p>
-                            </div>
-                            <div class="portfolio-tags" style="display: none;">
-                                <span class="tech-tag-item" data-filter="python">Python</span>
-                                <span class="tech-tag-item" data-filter="fastapi">FastAPI</span>
-                                <span class="tech-tag-item" data-filter="docker">Docker</span>
-                            </div>
-                        </div>
-                    </div>
+                <!-- No Projects Message -->
+                <div class="no-projects-message">
+                    <p>No projects have been added yet.</p>
                 </div>
                 {% endif %}
             </div>
@@ -363,6 +294,21 @@
     margin-top: auto;
     color: #555;
     font-size: 14px;
+}
+
+/* No projects message */
+.no-projects-message {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.no-projects-message p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
 }
 
 /* Additional style for tag filtering */
