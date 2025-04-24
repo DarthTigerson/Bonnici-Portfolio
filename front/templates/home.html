@@ -225,6 +225,14 @@
 
 {% else %}
 <!-- Normal Mode - Show regular portfolio content -->
+
+<!-- Wallpaper Mode Toggle Button (Desktop only) -->
+<button id="wallpaper-toggle" class="wallpaper-toggle" title="Toggle Wallpaper Mode">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3v4l-4 4 4 4v4h8v-4l4-4-4-4V3z"/>
+    </svg>
+</button>
+
 <div class="container">
     {% include "left_panel.html" %}
     {% include "main_panel.html" %}
@@ -253,6 +261,125 @@
     <p class="credit">v0.4.2</p>
 </footer>
 
+<style>
+/* Wallpaper Mode Toggle Button */
+.wallpaper-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: rgba(30, 30, 30, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    opacity: 0.7;
+    display: none; /* Hidden by default on mobile */
+}
+
+.wallpaper-toggle:hover {
+    background-color: rgba(40, 40, 40, 0.9);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.wallpaper-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.wallpaper-toggle.active {
+    background-color: rgba(254, 215, 2, 0.2); 
+    color: #fed702;
+}
+
+.wallpaper-toggle.active svg {
+    transform: rotate(180deg);
+}
+
+/* Hide all content in wallpaper mode */
+body.wallpaper-mode .container,
+body.wallpaper-mode .mobile-bottom-nav {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    visibility: hidden;
+}
+
+/* Make sure the left panel is hidden */
+body.wallpaper-mode .left-panel {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Make sure the main panel is hidden */
+body.wallpaper-mode .main-panel {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Keep footer visible in wallpaper mode but make it subtle */
+body.wallpaper-mode .site-footer {
+    opacity: 0.3;
+}
+
+body.wallpaper-mode .site-footer:hover {
+    opacity: 0.8;
+}
+
+/* Show toggle on desktop only */
+@media (min-width: 1251px) {
+    .wallpaper-toggle {
+        display: flex;
+    }
+}
+
+/* Animation classes */
+.animate-fade {
+    transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s ease, pointer-events 0s linear 0.6s;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wallpaperToggle = document.getElementById('wallpaper-toggle');
+    const container = document.querySelector('.container');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const footer = document.querySelector('.site-footer');
+    const leftPanel = document.querySelector('.left-panel');
+    const mainPanel = document.querySelector('.main-panel');
+    
+    // Add animation classes
+    container.classList.add('animate-fade');
+    if (mobileNav) mobileNav.classList.add('animate-fade');
+    if (footer) footer.classList.add('animate-fade');
+    if (leftPanel) leftPanel.classList.add('animate-fade');
+    if (mainPanel) mainPanel.classList.add('animate-fade');
+    
+    // Check local storage for previous state
+    const savedWallpaperMode = localStorage.getItem('wallpaperMode') === 'true';
+    if (savedWallpaperMode) {
+        document.body.classList.add('wallpaper-mode');
+        wallpaperToggle.classList.add('active');
+    }
+    
+    wallpaperToggle.addEventListener('click', function() {
+        // Toggle wallpaper mode
+        document.body.classList.toggle('wallpaper-mode');
+        this.classList.toggle('active');
+        
+        // Save state to local storage
+        const isActive = document.body.classList.contains('wallpaper-mode');
+        localStorage.setItem('wallpaperMode', isActive);
+    });
+});
+</script>
 {% endif %}
 
 {% endblock %}
