@@ -2914,6 +2914,27 @@ async function uploadSkillImage(event, sectionId, skillTitle) {
         return;
     }
     
+    // Check for HEIC/HEIF format
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, SVG, or another standard format.
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+        
+        // Clear the file input to prevent upload attempt
+        event.target.value = '';
+        return;
+    }
+    
     try {
         // Show loading state
         const skillCard = event.target.closest('.skill-card');
@@ -3040,7 +3061,19 @@ async function uploadSkillImage(event, sectionId, skillTitle) {
         reader.readAsDataURL(file);
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert(error.message || 'Error uploading image. Please try again.');
+        
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            ${error.message || 'Error uploading image. Please try again.'}
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
         
         // Restore original state on error
         const skillCard = event.target.closest('.skill-card');
@@ -3132,6 +3165,27 @@ async function uploadProfileImage(event) {
     
     if (!file.type.startsWith('image/')) {
         alert('Please upload an image file');
+        return;
+    }
+    
+    // Check for HEIC/HEIF format
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format.
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+        
+        // Clear the file input to prevent upload attempt
+        event.target.value = '';
         return;
     }
     

@@ -126,11 +126,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (imageInput) {
         imageInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Check for HEIC/HEIF format
+                const fileName = file.name.toLowerCase();
+                if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+                    showErrorNotification('HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format.');
+                    this.value = ''; // Clear the file input
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                 };
-                reader.readAsDataURL(this.files[0]);
+                reader.readAsDataURL(file);
             }
         });
     }

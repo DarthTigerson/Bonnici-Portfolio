@@ -132,6 +132,14 @@ async def save_portfolio(
                 # Get the uploaded file
                 image_file = form_data[image_key]
                 
+                # Check for HEIC/HEIF format
+                filename_lower = image_file.filename.lower()
+                if filename_lower.endswith('.heic') or filename_lower.endswith('.heif') or 'heic' in image_file.content_type.lower():
+                    raise HTTPException(
+                        status_code=400, 
+                        detail=f"HEIC/HEIF image format is not supported for project '{project.get('title', 'Unknown')}'. Please convert to JPEG, PNG, or another standard format."
+                    )
+                
                 # Generate a safe filename with project ID to avoid overwriting
                 original_filename = image_file.filename
                 ext = os.path.splitext(original_filename)[1].lower()

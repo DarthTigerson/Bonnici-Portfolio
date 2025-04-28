@@ -153,6 +153,14 @@ async def upload_profile_image(request: Request, file: UploadFile = File(...)):
                 content={"status": "error", "detail": "File must be an image"}
             )
         
+        # Check for HEIC/HEIF format
+        filename_lower = file.filename.lower()
+        if filename_lower.endswith('.heic') or filename_lower.endswith('.heif') or 'heic' in file.content_type.lower():
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "detail": "HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format."}
+            )
+        
         # Read image content
         content = await file.read()
         if not content:
@@ -240,6 +248,14 @@ async def upload_skill_image(
             return JSONResponse(
                 status_code=400,
                 content={"status": "error", "detail": "File must be an image"}
+            )
+        
+        # Check for HEIC/HEIF format
+        filename_lower = image.filename.lower()
+        if filename_lower.endswith('.heic') or filename_lower.endswith('.heif') or 'heic' in image.content_type.lower():
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "detail": "HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, SVG, or another standard format."}
             )
         
         # Read image content
