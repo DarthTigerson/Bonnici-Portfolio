@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Double confirmation when attempting to delete a project
 - Inconsistency in SVG images showing on mobile view
 - Added error messages when attempting to upload unsupported image formats (HEIC/HEIF)
+- Fixed bug where some SVG colors don't change to match site color scheme
 
 ### Changed
 - Improved save button UI that flashes and changes colors when changes are detected

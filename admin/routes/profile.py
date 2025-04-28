@@ -82,6 +82,17 @@ def update_svg_color(svg_content: str) -> str:
     svg_content = svg_content.replace("fill='#ffb800'", "fill='#ffd404'")
     svg_content = svg_content.replace('fill="#FFFF00"', 'fill="#ffd404"')
     svg_content = svg_content.replace("fill='#FFFF00'", "fill='#ffd404'")
+    
+    # Handle SVGs with style tags that define fill colors
+    svg_content = svg_content.replace('.st0{fill:#000000;}', '.st0{fill:#ffd404;}')
+    svg_content = svg_content.replace('.st0{fill:#000000}', '.st0{fill:#ffd404}')
+    svg_content = svg_content.replace('.st0 { fill:#000000; }', '.st0 { fill:#ffd404; }')
+    svg_content = svg_content.replace('.st0 { fill: #000000; }', '.st0 { fill: #ffd404; }')
+    svg_content = svg_content.replace('.st0{fill: #000000;}', '.st0{fill: #ffd404;}')
+    
+    # Use regex to catch more style variations
+    svg_content = re.sub(r'\.st0\s*{\s*fill\s*:\s*#000000\s*;\s*}', '.st0{fill:#ffd404;}', svg_content)
+    
     return svg_content
 
 def standardize_svg_attributes(svg_content: str) -> str:
