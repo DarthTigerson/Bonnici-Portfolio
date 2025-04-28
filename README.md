@@ -10,6 +10,10 @@ A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
 - Docker containerization
 - Secure admin panel with token-based authentication
 
+## Latest Updates
+
+See the [CHANGELOG.md](CHANGELOG.md) file for details on the latest changes and updates.
+
 ## Development
 
 ### Setup with PDM
