@@ -132,35 +132,46 @@ async def save_portfolio(
                 # Get the uploaded file
                 image_file = form_data[image_key]
                 
-                # Generate a safe filename
+                # Generate a safe filename with project ID to avoid overwriting
                 original_filename = image_file.filename
                 ext = os.path.splitext(original_filename)[1].lower()
-                filename = f"{uuid.uuid4().hex}{ext}"
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"project_{i}_{timestamp}_{uuid.uuid4().hex[:8]}{ext}"
                 
                 # Save the image
                 file_path = os.path.join(PORTFOLIO_IMAGE_DIR, filename)
                 
-                # If SVG, save directly
-                if ext.lower() == '.svg':
-                    with open(file_path, 'wb') as f:
+                try:
+                    # If SVG or GIF, save directly
+                    if ext.lower() in ['.svg', '.gif']:
+                        with open(file_path, 'wb') as f:
+                            content = await image_file.read()
+                            f.write(content)
+                    else:
+                        # Process and convert to webp for all other image types
                         content = await image_file.read()
-                        f.write(content)
-                else:
-                    # Process and convert to webp for all other image types
-                    content = await image_file.read()
-                    img = Image.open(io.BytesIO(content))
-                    
-                    # Resize if too large
-                    max_width, max_height = 800, 600
-                    if img.width > max_width or img.height > max_height:
-                        img.thumbnail((max_width, max_height))
-                    
-                    # Save as webp
-                    webp_filename = f"{uuid.uuid4().hex}.webp"
-                    webp_path = os.path.join(PORTFOLIO_IMAGE_DIR, webp_filename)
-                    img.save(webp_path, 'WEBP', quality=85)
-                    filename = webp_filename
-                    file_path = webp_path
+                        img = Image.open(io.BytesIO(content))
+                        
+                        # Resize if too large
+                        max_width, max_height = 800, 600
+                        if img.width > max_width or img.height > max_height:
+                            img.thumbnail((max_width, max_height))
+                        
+                        # Save as webp
+                        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                        webp_filename = f"project_{i}_{timestamp}_{uuid.uuid4().hex[:8]}.webp"
+                        webp_path = os.path.join(PORTFOLIO_IMAGE_DIR, webp_filename)
+                        img.save(webp_path, 'WEBP', quality=85)
+                        filename = webp_filename
+                        file_path = webp_path
+                except Exception as e:
+                    # Log the error
+                    print(f"Error processing image upload: {str(e)}")
+                    # Return a specific error message about the failed image
+                    raise HTTPException(
+                        status_code=400, 
+                        detail=f"Failed to process image for project '{project.get('title', 'Unknown')}': {str(e)}"
+                    )
                 
                 # Update project with the new image filename
                 project['image'] = filename

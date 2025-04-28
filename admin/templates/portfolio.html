@@ -122,7 +122,7 @@
                     <div class="form-group image-column">
                         <label for="image">
                             Image
-                            <button type="button" class="help-icon" data-tooltip="Recommended size: 800x600px. Images will be automatically resized and converted to webp format for optimal performance. Max file size: 5MB. SVG files are supported and will be preserved in their original format.">
+                            <button type="button" class="help-icon" data-tooltip="Recommended size: 800x600px. Images will be automatically resized and converted to webp format for optimal performance. Max file size: 5MB. SVG and GIF files are supported and will be preserved in their original format.">
                                 <i class="fas fa-circle-question"></i>
                             </button>
                         </label>
@@ -136,7 +136,7 @@
                                 </label>
                             </div>
                             <div class="file-input-container" style="display: none;">
-                                <input type="file" id="image" name="image" accept="image/*">
+                                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp,image/svg+xml,image/gif">
                             </div>
                         </div>
                     </div>
@@ -184,33 +184,8 @@
 <script>
 // Add event listeners after DOM is loaded to avoid inline onclick handlers
 document.addEventListener('DOMContentLoaded', function() {
-    // Add event listener to edit buttons
-    document.querySelectorAll('.edit-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            editProject(parseInt(projectId));
-        });
-    });
-    
-    // Add event listener to delete buttons
-    document.querySelectorAll('.delete-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            deleteProject(parseInt(projectId));
-        });
-    });
-    
-    // Add New Project button
-    document.getElementById('addSectionBtn').addEventListener('click', addNewSection);
-    
-    // Save Settings button
-    document.getElementById('saveSettingsBtn').addEventListener('click', savePortfolioSettings);
-    
-    // Close modal button
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    
-    // Save project button in modal
-    document.getElementById('save-project-btn').addEventListener('click', saveProject);
+    // Note: Removing duplicate event listeners that are already handled in portfolio.js
+    // The following event listeners are now managed by the initializeEventListeners function in portfolio.js
     
     // Handle tooltip positioning
     document.querySelectorAll('.help-icon').forEach(icon => {

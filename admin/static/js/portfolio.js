@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize event listeners
+    // Initialize event listeners - these are the ONLY event listeners that should be attached
     initializeEventListeners();
 
     // Initialize projects toggle for frontend visibility
@@ -163,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         });
     }
+
+    // Reset any existing confirmation flags to ensure clean state
+    window.isConfirmingDelete = false;
 });
 
 // Initialize event listeners (extracted to a separate function)
@@ -633,21 +636,93 @@ function editProject(index) {
 
 // Delete Project
 function deleteProject(index) {
-    if (confirm('Are you sure you want to delete this project?')) {
-        // Remove from UI first
-        const projectElement = document.querySelector(`.project-card[data-id="${index}"]`);
-        if (projectElement) {
-            projectElement.remove();
+    // Prevent multiple dialog execution by checking if already confirming
+    if (window.isConfirmingDelete) return;
+    
+    try {
+        window.isConfirmingDelete = true;
+        if (confirm('Are you sure you want to delete this project?')) {
+            // Remove from UI first
+            const projectElement = document.querySelector(`.project-card[data-id="${index}"]`);
+            if (projectElement) {
+                projectElement.remove();
+            }
+            
+            // Remove from array
+            portfolioProjects = portfolioProjects.filter((_, i) => i !== index);
+            
+            // Update data-id attributes to match new array indices
+            updateDataIds();
+            
+            // Show notification
+            showSaveNotification('Project deleted successfully');
+            
+            // Mark as needing save
+            highlightSaveButton();
+            
+            // Reattach event listeners to remaining projects
+            document.querySelectorAll('.options-btn').forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                // Add new listener
+                newButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const menu = this.closest('.options-menu');
+                    
+                    // Close all other open menus
+                    document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+                        if (openMenu !== menu) {
+                            openMenu.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle this menu
+                    menu.classList.toggle('active');
+                });
+            });
+            
+            // Reattach event listeners to edit/delete/test buttons
+            document.querySelectorAll('.edit-project-btn').forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                // Add new listener
+                newButton.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    editProject(parseInt(projectId));
+                });
+            });
+            
+            document.querySelectorAll('.delete-project-btn').forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                // Add new listener
+                newButton.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    deleteProject(parseInt(projectId));
+                });
+            });
+            
+            document.querySelectorAll('.test-url-btn').forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                // Add new listener
+                newButton.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    testProjectLink(parseInt(projectId));
+                });
+            });
         }
-        
-        // Remove from array
-        portfolioProjects = portfolioProjects.filter((_, i) => i !== index);
-        
-        // Show notification
-        showSaveNotification('Project deleted successfully');
-        
-        // Mark as needing save
-        highlightSaveButton();
+    } finally {
+        // Always reset the flag, even if an error occurs
+        window.isConfirmingDelete = false;
     }
 }
 
