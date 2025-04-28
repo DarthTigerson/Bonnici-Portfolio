@@ -9,6 +9,7 @@ from .admin import require_admin
 from PIL import Image
 import io
 from colorthief import ColorThief
+import re
 
 # Set up templates
 templates = Jinja2Templates(directory="admin/templates")
@@ -81,7 +82,55 @@ def update_svg_color(svg_content: str) -> str:
     svg_content = svg_content.replace("fill='#ffb800'", "fill='#ffd404'")
     svg_content = svg_content.replace('fill="#FFFF00"', 'fill="#ffd404"')
     svg_content = svg_content.replace("fill='#FFFF00'", "fill='#ffd404'")
+    
+    # Handle SVGs with style tags that define fill colors
+    svg_content = svg_content.replace('.st0{fill:#000000;}', '.st0{fill:#ffd404;}')
+    svg_content = svg_content.replace('.st0{fill:#000000}', '.st0{fill:#ffd404}')
+    svg_content = svg_content.replace('.st0 { fill:#000000; }', '.st0 { fill:#ffd404; }')
+    svg_content = svg_content.replace('.st0 { fill: #000000; }', '.st0 { fill: #ffd404; }')
+    svg_content = svg_content.replace('.st0{fill: #000000;}', '.st0{fill: #ffd404;}')
+    
+    # Use regex to catch more style variations
+    svg_content = re.sub(r'\.st0\s*{\s*fill\s*:\s*#000000\s*;\s*}', '.st0{fill:#ffd404;}', svg_content)
+    
     return svg_content
+
+def standardize_svg_attributes(svg_content: str) -> str:
+    """Ensure SVG has all the necessary attributes for proper mobile display"""
+    if not svg_content or not svg_content.strip().startswith('<svg'):
+        return svg_content
+    
+    # Find the opening svg tag
+    svg_tag_pattern = r'<svg[^>]*>'
+    svg_tag_match = re.search(svg_tag_pattern, svg_content)
+    
+    if not svg_tag_match:
+        return svg_content
+    
+    svg_tag = svg_tag_match.group(0)
+    
+    # Check if the SVG already has the required attributes
+    has_all_attributes = all(attr in svg_tag for attr in ['height="200px"', 'width="200px"', 'version="1.0"', 'encoding="utf-8"'])
+    
+    # If it already has all attributes, no need to modify
+    if has_all_attributes:
+        return svg_content
+    
+    # Remove existing attributes that we'll be standardizing
+    svg_tag_updated = re.sub(r'(width|height|fill|version|encoding)=["\'][^"\']*["\']\s*', '', svg_tag)
+    
+    # Add the standardized attributes
+    svg_tag_updated = svg_tag_updated.replace('<svg', '<svg fill="#ffd404" height="200px" width="200px" version="1.0" encoding="utf-8"')
+    
+    # Replace the old SVG tag with the updated one
+    updated_svg = svg_content.replace(svg_tag, svg_tag_updated)
+    
+    # Add viewBox if it doesn't exist
+    if 'viewBox' not in svg_tag_updated:
+        svg_viewbox = re.sub(r'<svg', '<svg viewBox="0 0 200 200"', svg_tag_updated)
+        updated_svg = updated_svg.replace(svg_tag_updated, svg_viewbox)
+    
+    return updated_svg
 
 @router.post("/update")
 @require_admin
@@ -91,8 +140,11 @@ async def update_profile(request: Request, updates: Dict[str, Any]):
         # Update SVG colors in what_im_doing panels
         if "what_im_doing" in updates:
             for panel in updates["what_im_doing"].values():
-                if "image" in panel:
+                if "image" in panel and panel["image"]:
+                    # First update the color
                     panel["image"] = update_svg_color(panel["image"])
+                    # Then standardize attributes for mobile display
+                    panel["image"] = standardize_svg_attributes(panel["image"])
         
         # Update the config with the new data
         updated_config = ConfigManager.update_config(updates)
@@ -110,6 +162,14 @@ async def upload_profile_image(request: Request, file: UploadFile = File(...)):
             return JSONResponse(
                 status_code=400,
                 content={"status": "error", "detail": "File must be an image"}
+            )
+        
+        # Check for HEIC/HEIF format
+        filename_lower = file.filename.lower()
+        if filename_lower.endswith('.heic') or filename_lower.endswith('.heif') or 'heic' in file.content_type.lower():
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "detail": "HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format."}
             )
         
         # Read image content
@@ -201,6 +261,14 @@ async def upload_skill_image(
                 content={"status": "error", "detail": "File must be an image"}
             )
         
+        # Check for HEIC/HEIF format
+        filename_lower = image.filename.lower()
+        if filename_lower.endswith('.heic') or filename_lower.endswith('.heif') or 'heic' in image.content_type.lower():
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "detail": "HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, SVG, or another standard format."}
+            )
+        
         # Read image content
         content = await image.read()
         if not content:
@@ -237,8 +305,33 @@ async def upload_skill_image(
                     filepath = os.path.join(SKILLS_IMAGE_DIR, filename)
                     counter += 1
                 
-                with open(filepath, 'wb') as f:
-                    f.write(content)
+                # Parse and standardize SVG dimensions to 200x200
+                svg_content = content.decode('utf-8')
+                
+                # Check if the SVG root has width and height attributes
+                svg_tag_pattern = r'<svg[^>]*>'
+                svg_tag_match = re.search(svg_tag_pattern, svg_content)
+                
+                if svg_tag_match:
+                    svg_tag = svg_tag_match.group(0)
+                    
+                    # Remove existing width/height attributes if they exist
+                    svg_tag_updated = re.sub(r'(width|height|fill|version|encoding)=["\'][^"\']*["\']\s*', '', svg_tag)
+                    
+                    # Add standardized dimensions and attributes that ensure mobile compatibility
+                    svg_tag_updated = svg_tag_updated.replace('<svg', '<svg fill="#ffd404" height="200px" width="200px" version="1.0" encoding="utf-8"')
+                    
+                    # Replace the old SVG tag with the updated one
+                    svg_content = svg_content.replace(svg_tag, svg_tag_updated)
+                    
+                    # Also add viewBox if it doesn't exist to maintain proportions
+                    if 'viewBox' not in svg_tag_updated:
+                        svg_content = svg_content.replace(svg_tag_updated, 
+                                                        svg_tag_updated.replace('<svg', '<svg viewBox="0 0 200 200"'))
+                
+                # Write the modified SVG content to file
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    f.write(svg_content)
                 
                 # For SVGs, we can't extract color so use default colors
                 colors = {

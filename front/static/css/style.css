@@ -849,8 +849,8 @@ h2.section-title {
 /* New Badge */
 .new-badge {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -2px;
+    right: -2px;
     background-color: #ffd700;
     color: #121212;
     font-size: 9px;
@@ -860,8 +860,9 @@ h2.section-title {
     letter-spacing: 0.5px;
     line-height: 1;
     border-radius: 0 12px 0 12px;
-    transform: rotate(0);
     box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    z-index: 2;
 }
 
 /* HTML Icon */

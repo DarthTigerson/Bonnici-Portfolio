@@ -1,6 +1,14 @@
-# Bonnici Portfolio
+# Bonnici Portfolio v0.4.2
 
 A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
+
+## Screenshots
+
+### Admin Panel
+![Admin Panel Screenshot](admin.gif)
+
+### User Portfolio
+![User Portfolio Screenshot](desktop_portfolio.gif)
 
 ## Features
 
@@ -9,6 +17,10 @@ A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
 - Discord webhook notifications
 - Docker containerization
 - Secure admin panel with token-based authentication
+
+## Latest Updates
+
+See the [CHANGELOG.md](CHANGELOG.md) file for details on the latest changes and updates.
 
 ## Development
 

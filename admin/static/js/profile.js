@@ -8,6 +8,15 @@ async function uploadProfileImage(event) {
         return;
     }
     
+    // Check for HEIC/HEIF format
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+        showErrorNotification('HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format.');
+        // Clear the file input to prevent upload attempt
+        event.target.value = '';
+        return;
+    }
+    
     try {
         // Show loading state
         const imageWrapper = event.target.closest('.profile-image-wrapper');
@@ -100,7 +109,7 @@ async function uploadProfileImage(event) {
         reader.readAsDataURL(file);
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert(error.message || 'Error uploading image. Please try again.');
+        showErrorNotification(error.message || 'Error uploading image. Please try again.');
         
         // Restore original state on error
         const imageWrapper = event.target.closest('.profile-image-wrapper');

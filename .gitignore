@@ -4,4 +4,7 @@ __pycache__
 bonnici_portfolio.db
 config.json
 data/images/skills/*.webp
+data/images/portfolio/*.gif
+data/images/portfolio/*.webp
+data/images/portfolio/*.gif
 profile.webp

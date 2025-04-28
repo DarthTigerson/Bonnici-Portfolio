@@ -972,6 +972,24 @@ input[type="url"]:focus {
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
+.save-btn.needs-save {
+    animation: pulse 1.5s infinite;
+    background-color: #f39c12;
+    box-shadow: 0 2px 12px rgba(243, 156, 18, 0.5);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 .placeholder-text {
     color: #94a3b8;
     text-align: center;
@@ -1983,6 +2001,117 @@ document.addEventListener('DOMContentLoaded', function() {
     if (panelsContainer) {
         panelsObserver.observe(panelsContainer, { childList: true });
     }
+
+    // Flag to track initialization state
+    let isInitializing = true;
+    
+    // Function to highlight save button when changes are detected
+    function highlightSaveButton() {
+        // Skip highlighting during initialization
+        if (isInitializing) return;
+        
+        const saveBtn = document.querySelector('.save-btn');
+        if (saveBtn) {
+            saveBtn.classList.add('needs-save');
+        }
+    }
+    
+    // Add change listeners to all form elements that should trigger save button highlight
+    
+    // Main info (name and job title)
+    document.getElementById('name').addEventListener('input', highlightSaveButton);
+    document.getElementById('job_title').addEventListener('input', highlightSaveButton);
+    
+    // Short and long descriptions
+    document.getElementById('short_description').addEventListener('input', highlightSaveButton);
+    document.getElementById('long_description').addEventListener('input', highlightSaveButton);
+    
+    // Social links - capture toggle events through event delegation
+    document.addEventListener('change', function(e) {
+        const target = e.target;
+        
+        // Social link toggle events
+        if (target.matches('.social-toggle input[type="checkbox"]')) {
+            highlightSaveButton();
+        }
+        
+        // What I'm Doing panel checkboxes, selects, etc.
+        if (target.closest('.what-im-doing-panel') && 
+            (target.matches('input[type="checkbox"]') || target.matches('select'))) {
+            highlightSaveButton();
+        }
+        
+        // Skills section selections and toggles
+        if (target.closest('.skills-section') && 
+            (target.matches('input[type="checkbox"]') || target.matches('select') || 
+             target.matches('.color-picker'))) {
+            highlightSaveButton();
+        }
+    });
+    
+    // Capture input events through event delegation
+    document.addEventListener('input', function(e) {
+        const target = e.target;
+        
+        // Social link URL input events
+        if (target.classList.contains('social-url-input')) {
+            highlightSaveButton();
+        }
+        
+        // What I'm Doing panel text inputs and textareas
+        if (target.closest('.what-im-doing-panel') && 
+            (target.matches('input[type="text"]') || target.matches('textarea'))) {
+            highlightSaveButton();
+        }
+        
+        // Skills section inputs
+        if (target.closest('.skills-section') && 
+            (target.matches('input[type="text"]') || target.matches('textarea') || 
+             target.matches('.skill-title') || target.matches('.section-title'))) {
+            highlightSaveButton();
+        }
+    });
+    
+    // Add listeners for custom actions that should trigger highlighting
+    
+    // Skill image uploads
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('.skill-image-upload')) {
+            highlightSaveButton();
+        }
+    });
+    
+    // Button click events for adding/removing skills and sections
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        
+        // Exclude test and save buttons to avoid false triggers
+        if (target.matches('.test-btn') || target.classList.contains('save-btn')) {
+            return;
+        }
+        
+        // Check if the clicked element or its parent is a button for skill/section management
+        const actionButton = target.closest('.add-section-btn, .delete-section-btn, .add-skill-btn, .delete-skill-btn, .move-btn');
+        if (actionButton) {
+            highlightSaveButton();
+        }
+    });
+    
+    // Directly connect saveAllChanges function to save button
+    const saveAllChangesBtn = document.querySelector('.save-btn');
+    if (saveAllChangesBtn) {
+        // Remove existing click handlers to avoid duplicates
+        const newSaveBtn = saveAllChangesBtn.cloneNode(true);
+        saveAllChangesBtn.parentNode.replaceChild(newSaveBtn, saveAllChangesBtn);
+        
+        // Add the saveAllChanges function as the click handler
+        newSaveBtn.addEventListener('click', saveAllChanges);
+    }
+    
+    // Done initializing, now changes should highlight the save button
+    setTimeout(() => {
+        isInitializing = false;
+    }, 300);
 });
 
 function toggleInput(id) {
@@ -2199,6 +2328,12 @@ async function saveAllChanges() {
         const result = await response.json();
         if (result.status === 'success') {
             showSaveNotification();
+            
+            // Remove needs-save class after successful save
+            const saveBtn = document.querySelector('.save-btn');
+            if (saveBtn) {
+                saveBtn.classList.remove('needs-save');
+            }
         } else {
             throw new Error(result.detail || 'Failed to save changes');
         }
@@ -2779,6 +2914,27 @@ async function uploadSkillImage(event, sectionId, skillTitle) {
         return;
     }
     
+    // Check for HEIC/HEIF format
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, SVG, or another standard format.
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+        
+        // Clear the file input to prevent upload attempt
+        event.target.value = '';
+        return;
+    }
+    
     try {
         // Show loading state
         const skillCard = event.target.closest('.skill-card');
@@ -2905,7 +3061,19 @@ async function uploadSkillImage(event, sectionId, skillTitle) {
         reader.readAsDataURL(file);
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert(error.message || 'Error uploading image. Please try again.');
+        
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            ${error.message || 'Error uploading image. Please try again.'}
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
         
         // Restore original state on error
         const skillCard = event.target.closest('.skill-card');
@@ -2997,6 +3165,27 @@ async function uploadProfileImage(event) {
     
     if (!file.type.startsWith('image/')) {
         alert('Please upload an image file');
+        return;
+    }
+    
+    // Check for HEIC/HEIF format
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type.toLowerCase().includes('heic')) {
+        // Create error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            HEIC/HEIF image format is not supported. Please convert to JPEG, PNG, or another standard format.
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+        
+        // Clear the file input to prevent upload attempt
+        event.target.value = '';
         return;
     }
     

@@ -122,7 +122,7 @@
                     <div class="form-group image-column">
                         <label for="image">
                             Image
-                            <button type="button" class="help-icon" data-tooltip="Recommended size: 800x600px. Images will be automatically resized and converted to webp format for optimal performance. Max file size: 5MB. SVG files are supported and will be preserved in their original format.">
+                            <button type="button" class="help-icon" data-tooltip="Recommended size: 800x600px. Images will be automatically resized and converted to webp format for optimal performance. Max file size: 5MB. SVG and GIF files are supported and will be preserved in their original format.">
                                 <i class="fas fa-circle-question"></i>
                             </button>
                         </label>
@@ -184,58 +184,13 @@
 <script>
 // Add event listeners after DOM is loaded to avoid inline onclick handlers
 document.addEventListener('DOMContentLoaded', function() {
-    // Add event listener to edit buttons
-    document.querySelectorAll('.edit-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            editProject(parseInt(projectId));
-        });
-    });
-    
-    // Add event listener to delete buttons
-    document.querySelectorAll('.delete-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            deleteProject(parseInt(projectId));
-        });
-    });
-    
-    // Add New Project button
-    document.getElementById('addSectionBtn').addEventListener('click', addNewSection);
-    
-    // Save Settings button
-    document.getElementById('saveSettingsBtn').addEventListener('click', savePortfolioSettings);
-    
-    // Close modal button
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    
-    // Save project button in modal
-    document.getElementById('save-project-btn').addEventListener('click', saveProject);
+    // Note: Removing duplicate event listeners that are already handled in portfolio.js
+    // The following event listeners are now managed by the initializeEventListeners function in portfolio.js
     
     // Handle tooltip positioning
     document.querySelectorAll('.help-icon').forEach(icon => {
         icon.addEventListener('mouseenter', positionTooltip);
     });
-    
-    // Add event to toggle dropdown menu
-    function setupOptionMenus() {
-        document.querySelectorAll('.options-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent click from being detected on document
-                const menu = this.closest('.options-menu');
-                
-                // Close all other open menus
-                document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-                    if (openMenu !== menu) {
-                        openMenu.classList.remove('active');
-                    }
-                });
-                
-                // Toggle this menu
-                menu.classList.toggle('active');
-            });
-        });
-    }
     
     // Close dropdown when clicking outside
     document.addEventListener('click', function() {
@@ -250,22 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
         });
     });
-    
-    // Initial setup
-    setupOptionMenus();
-    
-    // Setup for dynamically added cards
-    const projectsList = document.getElementById('projects-list');
-    if (projectsList) {
-        const observer = new MutationObserver(function() {
-            setupOptionMenus();
-        });
-        
-        observer.observe(projectsList, { 
-            childList: true, 
-            subtree: true 
-        });
-    }
     
     function positionTooltip(e) {
         const helpIcon = e.currentTarget;
