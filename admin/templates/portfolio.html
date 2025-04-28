@@ -192,26 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.addEventListener('mouseenter', positionTooltip);
     });
     
-    // Add event to toggle dropdown menu
-    function setupOptionMenus() {
-        document.querySelectorAll('.options-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent click from being detected on document
-                const menu = this.closest('.options-menu');
-                
-                // Close all other open menus
-                document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-                    if (openMenu !== menu) {
-                        openMenu.classList.remove('active');
-                    }
-                });
-                
-                // Toggle this menu
-                menu.classList.toggle('active');
-            });
-        });
-    }
-    
     // Close dropdown when clicking outside
     document.addEventListener('click', function() {
         document.querySelectorAll('.options-menu.active').forEach(menu => {
@@ -225,22 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
         });
     });
-    
-    // Initial setup
-    setupOptionMenus();
-    
-    // Setup for dynamically added cards
-    const projectsList = document.getElementById('projects-list');
-    if (projectsList) {
-        const observer = new MutationObserver(function() {
-            setupOptionMenus();
-        });
-        
-        observer.observe(projectsList, { 
-            childList: true, 
-            subtree: true 
-        });
-    }
     
     function positionTooltip(e) {
         const helpIcon = e.currentTarget;

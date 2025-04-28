@@ -50,8 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize event listeners - these are the ONLY event listeners that should be attached
-    initializeEventListeners();
+    // Add core event listeners
+    addCoreListeners();
+    
+    // Set up the options buttons
+    setupOptionButtons();
 
     // Initialize projects toggle for frontend visibility
     if (projectsEnabledToggle) {
@@ -168,40 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.isConfirmingDelete = false;
 });
 
-// Initialize event listeners (extracted to a separate function)
-function initializeEventListeners() {
-    // Add event listener to edit buttons
-    document.querySelectorAll('.edit-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            editProject(parseInt(projectId));
-        });
-    });
-    
-    // Add event listener to delete buttons
-    document.querySelectorAll('.delete-project-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            deleteProject(parseInt(projectId));
-        });
-    });
-    
-    // Add event listener to test URL buttons
-    document.querySelectorAll('.test-url-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            testProjectLink(parseInt(projectId));
-        });
-    });
-    
-    // Add event listener to test buttons (for project cards)
-    document.querySelectorAll('.test-link-btn:not(#test_git_url)').forEach(button => {
-        button.addEventListener('click', function() {
-            const projectId = this.getAttribute('data-id');
-            testProjectLink(parseInt(projectId));
-        });
-    });
-    
+// Add core event listeners for fixed UI elements
+function addCoreListeners() {
     // Add New Project button
     const addSectionBtn = document.getElementById('addSectionBtn');
     if (addSectionBtn) {
@@ -220,20 +191,85 @@ function initializeEventListeners() {
         closeModalBtn.addEventListener('click', closeModal);
     }
     
-    // Cancel button in modal
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
-    if (cancelModalBtn) {
-        cancelModalBtn.addEventListener('click', closeModal);
-    }
-    
     // Save project button in modal
     const saveProjectBtn = document.getElementById('save-project-btn');
     if (saveProjectBtn) {
         saveProjectBtn.addEventListener('click', saveProject);
     }
     
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.options-menu')) {
+            document.querySelectorAll('.options-menu.active').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        }
+    });
+    
     // Initialize drag-and-drop for project cards
     initializeProjectDragAndDrop();
+}
+
+// Set up options buttons with direct event handlers
+function setupOptionButtons() {
+    // Options buttons (three dots)
+    document.querySelectorAll('.options-btn').forEach(button => {
+        // First remove any existing listeners by cloning
+        const newButton = button.cloneNode(true);
+        if (button.parentNode) {
+            button.parentNode.replaceChild(newButton, button);
+        }
+        
+        // Add fresh click handler
+        newButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = this.closest('.options-menu');
+            
+            // Close all other menus
+            document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+                if (openMenu !== menu) {
+                    openMenu.classList.remove('active');
+                }
+            });
+            
+            // Toggle this menu
+            menu.classList.toggle('active');
+        });
+    });
+    
+    // Edit buttons
+    document.querySelectorAll('.edit-project-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const projectId = this.getAttribute('data-id');
+            editProject(parseInt(projectId));
+        });
+    });
+    
+    // Delete buttons
+    document.querySelectorAll('.delete-project-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const projectId = this.getAttribute('data-id');
+            deleteProject(parseInt(projectId));
+        });
+    });
+    
+    // Test URL buttons
+    document.querySelectorAll('.test-url-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const projectId = this.getAttribute('data-id');
+            testProjectLink(parseInt(projectId));
+        });
+    });
+    
+    // Prevent clicks inside dropdown from closing it
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
 }
 
 // Initialize drag and drop for projects
@@ -448,22 +484,7 @@ function addProjectToUI(project, index) {
     optionsButton.setAttribute('aria-label', 'Options');
     optionsButton.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
     
-    // Add event listener to options button
-    optionsButton.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const menu = this.closest('.options-menu');
-        
-        // Close all other open menus
-        document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-            if (openMenu !== menu) {
-                openMenu.classList.remove('active');
-            }
-        });
-        
-        // Toggle this menu
-        menu.classList.toggle('active');
-    });
-    
+    // No need to add event listener here - handled by event delegation
     optionsMenu.appendChild(optionsButton);
     
     // Create dropdown menu
@@ -479,9 +500,7 @@ function addProjectToUI(project, index) {
     testUrlButton.title = 'Test URL';
     testUrlButton.innerHTML = '<i class="fas fa-flask"></i> Test URL';
     
-    testUrlButton.addEventListener('click', function() {
-        testProjectLink(parseInt(this.dataset.id));
-    });
+    // No need to add event listener here - handled by event delegation
     
     // Edit button
     const editButton = document.createElement('button');
@@ -490,9 +509,7 @@ function addProjectToUI(project, index) {
     editButton.dataset.id = index;
     editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
     
-    editButton.addEventListener('click', function() {
-        editProject(parseInt(this.dataset.id));
-    });
+    // No need to add event listener here - handled by event delegation
     
     // Delete button
     const deleteButton = document.createElement('button');
@@ -501,9 +518,7 @@ function addProjectToUI(project, index) {
     deleteButton.dataset.id = index;
     deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
     
-    deleteButton.addEventListener('click', function() {
-        deleteProject(parseInt(this.dataset.id));
-    });
+    // No need to add event listener here - handled by event delegation
     
     // Add buttons to dropdown
     dropdownMenu.appendChild(testUrlButton);
@@ -572,10 +587,10 @@ function addProjectToUI(project, index) {
     projectCard.addEventListener('dragleave', handleProjectDragLeave);
     projectCard.addEventListener('drop', handleProjectDrop);
     
-    // Prevent dropdown menu clicks from triggering drag
-    dropdownMenu.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
+    // Setup option buttons for this new project
+    setTimeout(() => {
+        setupOptionButtons();
+    }, 0);
     
     // Mark as needing save
     highlightSaveButton();
@@ -654,71 +669,16 @@ function deleteProject(index) {
             // Update data-id attributes to match new array indices
             updateDataIds();
             
+            // Re-setup option buttons
+            setTimeout(() => {
+                setupOptionButtons();
+            }, 0);
+            
             // Show notification
             showSaveNotification('Project deleted successfully');
             
             // Mark as needing save
             highlightSaveButton();
-            
-            // Reattach event listeners to remaining projects
-            document.querySelectorAll('.options-btn').forEach(button => {
-                // Remove existing listeners to prevent duplicates
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                // Add new listener
-                newButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const menu = this.closest('.options-menu');
-                    
-                    // Close all other open menus
-                    document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-                        if (openMenu !== menu) {
-                            openMenu.classList.remove('active');
-                        }
-                    });
-                    
-                    // Toggle this menu
-                    menu.classList.toggle('active');
-                });
-            });
-            
-            // Reattach event listeners to edit/delete/test buttons
-            document.querySelectorAll('.edit-project-btn').forEach(button => {
-                // Remove existing listeners to prevent duplicates
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                // Add new listener
-                newButton.addEventListener('click', function() {
-                    const projectId = this.getAttribute('data-id');
-                    editProject(parseInt(projectId));
-                });
-            });
-            
-            document.querySelectorAll('.delete-project-btn').forEach(button => {
-                // Remove existing listeners to prevent duplicates
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                // Add new listener
-                newButton.addEventListener('click', function() {
-                    const projectId = this.getAttribute('data-id');
-                    deleteProject(parseInt(projectId));
-                });
-            });
-            
-            document.querySelectorAll('.test-url-btn').forEach(button => {
-                // Remove existing listeners to prevent duplicates
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                // Add new listener
-                newButton.addEventListener('click', function() {
-                    const projectId = this.getAttribute('data-id');
-                    testProjectLink(parseInt(projectId));
-                });
-            });
         }
     } finally {
         // Always reset the flag, even if an error occurs
@@ -816,6 +776,11 @@ function updateProjectInUI(project, index) {
     
     // Update description
     projectCard.querySelector('.project-description').textContent = project.description || '';
+    
+    // Setup option buttons again to ensure they work
+    setTimeout(() => {
+        setupOptionButtons();
+    }, 0);
     
     // Mark as needing save
     highlightSaveButton();
