@@ -541,11 +541,12 @@
     width: 100%;
     margin-bottom: 16px;
     padding: 12px;
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     overflow-x: auto;
     scrollbar-width: thin;
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .nav-tab {
@@ -558,7 +559,7 @@
     border: none;
     border-radius: 8px;
     background: transparent;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.95em;
     font-weight: 500;
     cursor: pointer;
@@ -572,12 +573,12 @@
 }
 
 .nav-tab:hover {
-    background: #f1f5f9;
-    color: #1a2b3c;
+    background: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .nav-tab.active {
-    background: #3498db;
+    background: var(--accent-color);
     color: white;
 }
 
@@ -600,10 +601,11 @@
 }
 
 .profile-section {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .content-container {
@@ -635,12 +637,13 @@
 }
 
 .label-container {
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1.1em;
     font-weight: 500;
     min-width: 140px;
     flex-shrink: 0;
     text-align: right;
+    transition: color 0.3s;
 }
 
 .input-with-toggle {
@@ -654,46 +657,49 @@
     flex: 1;
     display: flex;
     align-items: center;
-    background-color: white;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 0 16px;
     height: 48px;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, border-color 0.3s;
 }
 
 .input-container:hover {
-    background-color: #fff;
-    border-color: #cbd5e1;
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
 }
 
 .input-container:focus-within {
-    background-color: #fff;
-    border-color: #3498db;
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .input-container i {
-    color: #64748b;
+    color: var(--text-secondary);
     margin-right: 12px;
     font-size: 1.1em;
+    transition: color 0.3s;
 }
 
 .input-container input {
     flex: 1;
     border: none;
     background: transparent;
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1em;
     font-weight: 500;
     padding: 0;
     height: 100%;
     width: 100%;
+    transition: color 0.3s;
 }
 
 .input-container input::placeholder {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-weight: normal;
+    transition: color 0.3s;
 }
 
 .input-container input:focus {
@@ -702,21 +708,22 @@
 
 /* Disabled state styles */
 .input-container {
-    background-color: white;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
 }
 
 .input-container.disabled,
 .input-container:has(input:disabled) {
-    background-color: #f8f9fa;
-    border-color: #e2e8f0;
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    opacity: 0.8;
 }
 
 .input-container.disabled i,
 .input-container.disabled input,
 .input-container:has(input:disabled) i,
 .input-container:has(input:disabled) input {
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 input:disabled {
@@ -749,7 +756,7 @@ input:disabled {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e2e8f0;
+    background-color: var(--border-color);
     transition: .3s;
     border-radius: 24px;
 }
@@ -768,11 +775,11 @@ input:disabled {
 }
 
 input:checked + .slider {
-    background-color: #3498db;
+    background-color: var(--accent-color);
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #3498db;
+    box-shadow: 0 0 1px var(--accent-color);
 }
 
 input:checked + .slider:before {
@@ -783,12 +790,12 @@ input:checked + .slider:before {
 .test-link-btn {
     height: 48px;
     width: 48px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    background: white;
-    color: #64748b;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
@@ -796,16 +803,17 @@ input:checked + .slider:before {
 }
 
 .test-link-btn:hover:not(:disabled) {
-    background: #f8fafc;
-    color: #3498db;
-    border-color: #3498db;
+    background: var(--bg-primary);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .test-link-btn:disabled {
-    background: #f8fafc;
-    color: #94a3b8;
-    border-color: #e2e8f0;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* URL validation styles */
@@ -845,51 +853,47 @@ input[type="url"]:focus {
     margin-bottom: 12px;
     font-size: 1.1em;
     font-weight: 500;
-    color: #1a2b3c;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .form-group textarea {
     width: 100%;
     padding: 16px;
-    background-color: #f8f9fa;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1em;
     font-weight: 500;
     line-height: 1.6;
     resize: vertical;
-}
-
-#short_description {
-    min-height: 96px;
-}
-
-#long_description {
-    min-height: 192px;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
-    background-color: white;
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .form-group textarea::placeholder {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-weight: normal;
+    transition: color 0.3s;
 }
 
 .char-counter {
     float: right;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.9em;
     font-weight: normal;
-    background: #f1f5f9;
+    background: var(--bg-primary);
     padding: 2px 8px;
     border-radius: 4px;
     margin-left: 8px;
+    transition: color 0.3s, background-color 0.3s;
 }
 
 .char-counter.limit {
@@ -991,10 +995,11 @@ input[type="url"]:focus {
 }
 
 .placeholder-text {
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-align: center;
     padding: 40px;
     font-style: italic;
+    transition: color 0.3s;
 }
 
 /* Help icon button */
@@ -1004,14 +1009,14 @@ input[type="url"]:focus {
     padding: 0;
     margin-left: 8px;
     cursor: help;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.9em;
     transition: color 0.2s ease;
     position: relative;
 }
 
 .help-icon:hover {
-    color: #3498db;
+    color: var(--accent-color);
 }
 
 /* Tooltip styles */
@@ -1075,20 +1080,20 @@ input[type="url"]:focus {
     width: 100%;
     min-height: 72px;
     padding: 12px 16px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1em;
     font-weight: 500;
     line-height: 1.6;
     resize: vertical;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .description-container textarea:focus {
-    background-color: white;
-    border-color: #3498db;
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -1096,13 +1101,13 @@ input[type="url"]:focus {
     position: absolute;
     top: -24px;
     right: 0;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.85em;
     font-weight: normal;
-    background: #f1f5f9;
+    background: var(--bg-primary);
     padding: 2px 8px;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s;
 }
 
 .description-container .char-counter.limit {
@@ -1115,7 +1120,7 @@ input[type="url"]:focus {
     flex: 1;
     border: none;
     background: transparent;
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1em;
     font-weight: 500;
     padding: 0;
@@ -1123,14 +1128,7 @@ input[type="url"]:focus {
     width: 100%;
     cursor: pointer;
     appearance: none;
-}
-
-.input-container select:focus {
-    outline: none;
-}
-
-.input-container:has(select) {
-    position: relative;
+    transition: color 0.3s;
 }
 
 .input-container:has(select)::after {
@@ -1141,8 +1139,9 @@ input[type="url"]:focus {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #64748b;
+    color: var(--text-secondary);
     pointer-events: none;
+    transition: color 0.3s;
 }
 
 .what-im-doing-grid {
@@ -1154,14 +1153,20 @@ input[type="url"]:focus {
 }
 
 .what-im-doing-panel {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, border-color 0.3s;
     display: flex;
     flex-direction: column;
     cursor: move;
+}
+
+.what-im-doing-panel:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
 }
 
 /* Remove this problematic rule that makes dragged panels disappear */
@@ -1190,27 +1195,25 @@ input[type="url"]:focus {
 
 .panel-header {
     padding: 6px 20px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8fafc;
+    background: var(--bg-primary);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .drag-handle {
     cursor: grab;
-    color: #94a3b8;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     padding: 4px;
+    transition: color 0.3s;
 }
 
 .drag-handle:hover {
-    color: #3498db;
-}
-
-.drag-handle:active {
-    cursor: grabbing;
+    color: var(--accent-color);
 }
 
 .panel-content {
@@ -1234,20 +1237,20 @@ input[type="url"]:focus {
     width: 100%;
     min-height: 72px;
     padding: 12px 16px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    color: #1a2b3c;
+    color: var(--text-primary);
     font-size: 1em;
     font-weight: 500;
     line-height: 1.6;
     resize: vertical;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .panel-content .description-container textarea:focus {
-    background-color: white;
-    border-color: #3498db;
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -1255,13 +1258,13 @@ input[type="url"]:focus {
     position: absolute;
     top: -24px;
     right: 0;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.85em;
     font-weight: normal;
-    background: #f1f5f9;
+    background: var(--bg-primary);
     padding: 2px 8px;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s;
 }
 
 .panel-content .description-container .char-counter.limit {
@@ -1879,6 +1882,14 @@ input[type="url"]:focus {
 .profile-image-wrapper .upload-overlay i {
     font-size: 2em;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+#short_description {
+    min-height: 96px;
+}
+
+#long_description {
+    min-height: 192px;
 }
 </style>
 
