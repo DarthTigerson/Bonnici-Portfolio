@@ -11,7 +11,7 @@ import models
 app = FastAPI(
     title="Admin Panel",
     description="Bonnici Portfolioo Admin Panel",
-    version="0.4.2"
+    version="0.4.3"
 )
 
 models.Base.metadata.create_all(bind=engine)

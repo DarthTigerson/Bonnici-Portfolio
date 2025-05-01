@@ -258,33 +258,37 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .portfolio-card {
-    background-color: white;
+    background-color: var(--bg-secondary);
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     margin-bottom: 30px;
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 
 .portfolio-card-header {
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .portfolio-card-title h4 {
     margin: 0 0 6px 0;
     font-size: 18px;
-    color: #2c3e50;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .portfolio-card-title p {
     margin: 0;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 13px;
+    transition: color 0.3s;
 }
 
 /* Portfolio Settings */
@@ -292,11 +296,12 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     gap: 20px;
     padding: 15px 20px;
-    background-color: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .portfolio-setting-item {
@@ -312,27 +317,31 @@ document.addEventListener('DOMContentLoaded', function() {
 .portfolio-setting-item label {
     font-size: 14px;
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .setting-select {
     padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    background-color: white;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
     font-size: 14px;
-    color: #2c3e50;
+    color: var(--text-primary);
     cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .setting-select:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 .portfolio-card-body {
     padding: 20px;
+    background-color: var(--bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .projects-list-container {
@@ -349,15 +358,15 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Project Card Styling */
 .project-card {
     position: relative;
-    background-color: white;
+    background-color: var(--bg-secondary);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s, border-color 0.3s;
     display: flex;
     flex-direction: column;
     height: 100%;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
 }
 
 .project-card:hover {
@@ -369,7 +378,8 @@ document.addEventListener('DOMContentLoaded', function() {
     position: relative;
     height: 180px;
     overflow: hidden;
-    background-color: #f1f5f9;
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s;
 }
 
 .project-card-image img {
@@ -384,14 +394,17 @@ document.addEventListener('DOMContentLoaded', function() {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    background-color: var(--bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .project-title {
     margin: 0 0 12px 0;
     font-size: 18px;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-primary);
     line-height: 1.2;
+    transition: color 0.3s;
 }
 
 .project-tags {
@@ -402,17 +415,17 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .project-tag {
-    background-color: #e2f5ff;
-    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.15);
+    color: var(--accent-color);
     padding: 3px 10px;
     border-radius: 30px;
     font-size: 12px;
     font-weight: 500;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.3s;
 }
 
 .project-description {
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.5;
     margin: 0 0 16px 0;
@@ -421,6 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    transition: color 0.3s;
 }
 
 /* Options Menu Styles */
@@ -432,24 +446,24 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .options-btn {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--bg-secondary);
     width: 30px;
     height: 30px;
     border-radius: 4px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #64748b;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
+    color: var(--text-secondary);
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .options-btn:hover {
-    background-color: white;
-    color: #3498db;
-    border-color: #3498db;
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .dropdown-menu {
@@ -457,14 +471,15 @@ document.addEventListener('DOMContentLoaded', function() {
     right: 0;
     top: 35px;
     width: 150px;
-    background-color: white;
+    background-color: var(--bg-secondary);
     border-radius: 6px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--card-shadow);
     display: none;
     flex-direction: column;
     overflow: hidden;
     z-index: 20;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .options-menu.active .dropdown-menu {
@@ -481,12 +496,12 @@ document.addEventListener('DOMContentLoaded', function() {
     border: none;
     text-align: left;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    color: #2c3e50;
+    transition: background-color 0.2s ease, color 0.3s;
+    color: var(--text-primary);
 }
 
 .dropdown-item:hover {
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
 }
 
 .dropdown-item i {
@@ -500,15 +515,15 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .dropdown-item.delete-project-btn:hover {
-    background-color: #fee2e2;
+    background-color: rgba(231, 76, 60, 0.15);
 }
 
 .dropdown-item.edit-project-btn i {
-    color: #3498db;
+    color: var(--accent-color);
 }
 
 .dropdown-item.test-url-btn i {
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 /* Project actions now in dropdown */
@@ -519,11 +534,12 @@ document.addEventListener('DOMContentLoaded', function() {
 .no-projects {
     text-align: center;
     padding: 40px;
-    color: #64748b;
-    background-color: #f8fafc;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
     border-radius: 8px;
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed var(--border-color);
     grid-column: 1 / -1;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 .save-button-container {
@@ -563,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #3498db;
+    background-color: var(--accent-color);
     color: white;
     padding: 12px 24px;
     border: none;
@@ -613,27 +629,29 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .modal-content {
-    background-color: #fefefe;
+    background-color: var(--bg-secondary);
     margin: 5% auto;
     padding: 0;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     width: 80%;
     max-width: 800px;
     max-height: 90vh;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .modal-header {
     padding: 15px 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f8f9fa;
+    background-color: var(--bg-primary);
     border-radius: 8px 8px 0 0;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .title-input-container {
@@ -646,27 +664,27 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 10px 12px;
     font-size: 1.5rem;
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--text-primary);
     border: 1px solid transparent;
     border-radius: 6px;
     background-color: transparent;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .title-input-container input:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    border-color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color);
 }
 
 .title-input-container input:focus {
     outline: none;
-    background-color: white;
-    border-color: #3498db;
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 .title-input-container input::placeholder {
-    color: #94a3b8;
+    color: var(--text-secondary);
     opacity: 0.7;
     font-weight: normal;
 }
@@ -674,21 +692,23 @@ document.addEventListener('DOMContentLoaded', function() {
 .modal-title {
     margin: 0;
     font-size: 1.5rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     flex: 1;
+    transition: color 0.3s;
 }
 
 .close {
-    color: #aaa;
+    color: var(--text-secondary);
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
     line-height: 1;
+    transition: color 0.3s;
 }
 
 .close:hover,
 .close:focus {
-    color: #2c3e50;
+    color: var(--text-primary);
     text-decoration: none;
 }
 
@@ -697,16 +717,19 @@ document.addEventListener('DOMContentLoaded', function() {
     overflow-y: auto;
     flex: 1;
     max-height: calc(90vh - 140px);
+    background-color: var(--bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .modal-actions {
     padding: 15px 20px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    background-color: #f8f9fa;
+    background-color: var(--bg-primary);
     border-radius: 0 0 8px 8px;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 /* Form styles */
@@ -717,9 +740,10 @@ document.addEventListener('DOMContentLoaded', function() {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-weight: 500;
     font-size: 14px;
+    transition: color 0.3s;
 }
 
 .form-group input[type="text"],
@@ -727,17 +751,19 @@ document.addEventListener('DOMContentLoaded', function() {
 .form-group textarea {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 14px;
-    color: #2c3e50;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="url"]:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
@@ -750,15 +776,16 @@ document.addEventListener('DOMContentLoaded', function() {
 .image-preview-container {
     width: 200px;
     height: 150px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     overflow: hidden;
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .image-preview-container img {
@@ -819,12 +846,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .help-text {
     font-size: 12px;
-    color: #64748b;
+    color: var(--text-secondary);
     margin-top: 8px;
+    transition: color 0.3s;
 }
 
 #save-project-btn {
-    background-color: #3498db;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -840,20 +868,19 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .cancel-btn {
-    background-color: #f8fafc;
-    border: 1px solid #cbd5e1;
-    color: #64748b;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 .cancel-btn:hover {
-    background-color: #f1f5f9;
-    color: #334155;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 /* Notifications */

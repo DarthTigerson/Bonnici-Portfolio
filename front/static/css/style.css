@@ -1812,7 +1812,7 @@ h2.section-title {
     padding: 15px 30px;
     background-color: transparent;
     opacity: 0.7;
-    z-index: -1;
+    /* Removing negative z-index to allow clicking links */
 }
 
 .site-footer .credit {
@@ -1827,7 +1827,7 @@ h2.section-title {
     text-decoration: none;
     transition: color 0.3s ease;
     position: relative;
-    z-index: -1;
+    /* Removing this negative z-index that's preventing clicks */
 }
 
 .site-footer .credit a:hover {
@@ -1838,6 +1838,7 @@ h2.section-title {
 @media (max-width: 600px) {
     .site-footer {
         bottom: 55px; /* Position above mobile navigation */
+        z-index: -1; /* Add negative z-index only for mobile */
     }
 }
 

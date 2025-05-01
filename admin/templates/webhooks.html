@@ -415,11 +415,14 @@ function updatePlatformIcon(iconElement, platform) {
 .webhooks-title h3 {
     font-size: 24px;
     margin-bottom: 8px;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .subtitle {
-    color: #888;
+    color: var(--text-secondary);
     font-size: 14px;
+    transition: color 0.3s;
 }
 
 .save-button-container {
@@ -437,7 +440,7 @@ function updatePlatformIcon(iconElement, platform) {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #3498db;
+    background-color: var(--accent-color);
     color: white;
     padding: 12px 24px;
     border: none;
@@ -480,37 +483,43 @@ function updatePlatformIcon(iconElement, platform) {
 }
 
 .webhook-card {
-    background-color: white;
+    background-color: var(--bg-secondary);
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 
 .webhook-card-header {
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .webhook-card-title h4 {
     margin: 0 0 6px 0;
     font-size: 18px;
-    color: #2c3e50;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .webhook-card-title p {
     margin: 0;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 13px;
+    transition: color 0.3s;
 }
 
 .webhook-card-body {
     padding: 20px;
     position: relative;
+    background-color: var(--bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .form-group {
@@ -521,9 +530,10 @@ function updatePlatformIcon(iconElement, platform) {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 500;
+    transition: color 0.3s;
 }
 
 .input-with-toggle {
@@ -536,17 +546,19 @@ function updatePlatformIcon(iconElement, platform) {
     position: relative;
     display: flex;
     align-items: center;
-    background-color: white;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     flex: 1;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .input-container i {
     position: absolute;
     left: 12px;
-    color: #64748b;
+    color: var(--text-secondary);
+    transition: color 0.3s;
 }
 
 .input-container input {
@@ -554,9 +566,10 @@ function updatePlatformIcon(iconElement, platform) {
     padding: 10px 10px 10px 40px;
     border: none;
     background: transparent;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 14px;
     height: 48px;
+    transition: color 0.3s;
 }
 
 .input-container input:focus {
@@ -566,38 +579,41 @@ function updatePlatformIcon(iconElement, platform) {
 
 .input-container input:disabled {
     opacity: 0.5;
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     cursor: not-allowed;
 }
 
 .webhook-description {
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     padding: 12px;
     border-radius: 5px;
     margin-bottom: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .webhook-description p {
     margin: 0 0 6px 0;
     font-size: 13px;
-    color: #64748b;
+    color: var(--text-secondary);
+    transition: color 0.3s;
 }
 
 .webhook-description small {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 12px;
+    transition: color 0.3s;
 }
 
 .test-link-btn {
     height: 48px;
     width: 48px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background: white;
-    color: #64748b;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
@@ -605,16 +621,17 @@ function updatePlatformIcon(iconElement, platform) {
 }
 
 .test-link-btn:hover:not(:disabled) {
-    background: #f8fafc;
-    color: #3498db;
-    border-color: #3498db;
+    background: var(--bg-primary);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .test-link-btn:disabled {
-    background: #f8fafc;
-    color: #94a3b8;
-    border-color: #e2e8f0;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .switch {
@@ -637,7 +654,7 @@ function updatePlatformIcon(iconElement, platform) {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbd5e1;
+    background-color: var(--border-color);
     transition: .4s;
     border-radius: 34px;
 }
@@ -655,7 +672,7 @@ function updatePlatformIcon(iconElement, platform) {
 }
 
 input:checked + .slider {
-    background-color: #3498db;
+    background-color: var(--accent-color);
 }
 
 input:checked + .slider:before {
@@ -730,8 +747,9 @@ input:checked + .slider:before {
     display: inline-block;
     margin-bottom: 0;
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 14px;
+    transition: color 0.3s;
 }
 
 /* Help icon and tooltip styles */
@@ -747,12 +765,13 @@ input:checked + .slider:before {
 }
 
 .help-icon i {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 18px;
+    transition: color 0.3s;
 }
 
 .help-icon:hover i {
-    color: #3498db;
+    color: var(--accent-color);
 }
 
 /* Tooltip popup styling */
@@ -799,14 +818,15 @@ input:checked + .slider:before {
 }
 
 .webhook-card.webhook-disabled .webhook-card-body {
-    background-color: #f0f0f5;
+    background-color: var(--bg-primary);
+    opacity: 0.8;
 }
 
 .webhook-card.webhook-disabled .input-container {
     opacity: 0.7;
 }
 
-/* Add this to the CSS section */
+/* Platform icons */
 .platform-icon.discord {
     color: #5865F2;
 }
@@ -820,7 +840,7 @@ input:checked + .slider:before {
 }
 
 .platform-icon.generic {
-    color: #64748b;
+    color: var(--text-secondary);
 }
 </style>
 {% endblock %}

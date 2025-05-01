@@ -10,7 +10,7 @@ import models
 
 app = FastAPI(
     title="Portfolio Website",
-    version="0.4.2"
+    version="0.4.3"
 )
 
 models.Base.metadata.create_all(bind=engine)

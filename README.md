@@ -1,4 +1,4 @@
-# Bonnici Portfolio v0.4.2
+# Bonnici Portfolio v0.4.3
 
 A modern, responsive portfolio website built with FastAPI and SQLAlchemy.
 
