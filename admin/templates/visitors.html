@@ -500,6 +500,25 @@ document.addEventListener('DOMContentLoaded', function() {
             modalBody.innerHTML = '';
         }, 300); // Wait for fade out animation
     }
+
+    // Get chart container and toggle button
+    const chartContainer = document.getElementById('visitors-chart-view');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    
+    // If we're on the visitors page and have the chart and toggle
+    if (chartContainer && themeToggleBtn) {
+        // Listen for theme changes and redraw chart if needed
+        themeToggleBtn.addEventListener('click', function() {
+            setTimeout(function() {
+                // Check if chart is visible (active tab)
+                if (chartContainer.classList.contains('active') && window.visitorsChart) {
+                    // Destroy and reinitialize chart to apply new theme
+                    window.visitorsChart.destroy();
+                    initializeChart();
+                }
+            }, 100); // Small delay to ensure theme changes are applied
+        });
+    }
 });
 </script>
 {% endblock %}
