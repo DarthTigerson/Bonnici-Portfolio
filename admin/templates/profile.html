@@ -1116,7 +1116,7 @@ input[type="url"]:focus {
 }
 
 /* Select styles */
-.input-container select {
+.input-container > select {
     flex: 1;
     border: none;
     background: transparent;
@@ -1131,7 +1131,7 @@ input[type="url"]:focus {
     transition: color 0.3s;
 }
 
-.input-container:has(select)::after {
+.input-container:has(> select)::after {
     content: '\f107';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
@@ -1169,28 +1169,12 @@ input[type="url"]:focus {
     transform: translateY(-2px);
 }
 
-/* Remove this problematic rule that makes dragged panels disappear */
-/* 
-.what-im-doing-panel.dragging,
-.what-im-doing-panel.drag-over,
-.skills-section.dragging,
-.skills-section.drag-over {
-    display: none;
-}
-*/
-
 /* Add proper styles for dragging state */
 .what-im-doing-panel.dragging {
     opacity: 0.6;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     transform: scale(1.02);
     z-index: 100;
-}
-
-.what-im-doing-panel:hover {
-    border-color: #3498db;
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
-    transform: translateY(-2px);
 }
 
 .panel-header {
@@ -1274,12 +1258,12 @@ input[type="url"]:focus {
 
 /* Empty/Disabled State */
 .what-im-doing-panel:not(:has(input:checked)) {
-    background: #f8fafc;
+    background: var(--bg-primary);
     border-style: dashed;
 }
 
 .what-im-doing-panel:not(:has(input:checked)):hover {
-    background: white;
+    background: var(--bg-secondary);
     border-style: solid;
 }
 
@@ -1305,26 +1289,26 @@ input[type="url"]:focus {
 
 /* Enhanced Input States */
 .panel-content .input-container:has(input:not(:disabled)):hover {
-    border-color: #3498db;
-    background-color: white;
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
 }
 
 .panel-content .input-container:has(input:disabled) {
-    background-color: #f8fafc;
+    background-color: var(--bg-primary);
     border-style: dashed;
 }
 
 /* Label Styles */
 .panel-content select {
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 .panel-content select:not([value=""]) {
-    color: #1a2b3c;
+    color: var(--text-primary);
 }
 
 .panel-content select option {
-    color: #1a2b3c;
+    color: var(--text-primary);
 }
 
 /* Save Button Enhancement */
@@ -1762,20 +1746,23 @@ input[type="url"]:focus {
     width: 80px;
     height: 80px;
     min-width: 80px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px;
     overflow: hidden;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .svg-preview svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .svg-input-container {
@@ -1831,13 +1818,13 @@ input[type="url"]:focus {
     height: 200px;
     border-radius: 24px;  /* Changed from 50% to 24px for rounded corners */
     overflow: hidden;
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    transition: all 0.2s ease;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    transition: all 0.2s ease, background-color 0.3s, border-color 0.3s;
 }
 
 .profile-image-wrapper:hover {
-    border-color: #3498db;
+    border-color: var(--accent-color);
     box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
     transform: translateY(-2px);
 }
@@ -1854,9 +1841,10 @@ input[type="url"]:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #94a3b8;
+    color: var(--text-secondary);
     white-space: nowrap;
     font-size: 0.9em;
+    transition: color 0.3s;
 }
 
 .profile-image-wrapper .upload-overlay {
@@ -1890,6 +1878,36 @@ input[type="url"]:focus {
 
 #long_description {
     min-height: 192px;
+}
+
+.what-im-doing-panel .input-container > select {
+    color: var(--text-primary);
+    background-color: transparent;
+    transition: color 0.3s;
+}
+
+.what-im-doing-panel .input-container > select:disabled {
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.what-im-doing-panel:not(:has(input:checked)) .svg-preview {
+    background-color: var(--bg-primary);
+    border-style: dashed;
+    opacity: 0.7;
+}
+
+.what-im-doing-panel:not(:has(input:checked)) .input-container {
+    background-color: var(--bg-primary);
+    border-style: dashed;
+    opacity: 0.7;
+}
+
+/* Dark mode support for error states */
+[data-theme="dark"] .char-counter.limit,
+[data-theme="dark"] .panel-content .description-container .char-counter.limit {
+    color: #fca5a5;
+    background: rgba(220, 38, 38, 0.2);
 }
 </style>
 
