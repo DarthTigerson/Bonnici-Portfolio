@@ -1,3 +1,9 @@
+// Dark Mode Toggle Functionality - Moved to top for priority
+document.addEventListener('DOMContentLoaded', function() {
+    // This dark mode toggle has been moved to layout.html for consistency
+    // No code here to avoid duplicate initializations
+});
+
 // Message Modal Functionality
 const modal = document.getElementById("messageModal");
 const closeBtn = document.getElementsByClassName("close")[0];
@@ -188,6 +194,14 @@ document.addEventListener('DOMContentLoaded', function() {
             visitCounts[date] = (visitCounts[date] || 0) + 1;
         });
 
+        // Check if dark mode is active
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        
+        // Set chart colors based on theme
+        const chartColor = isDarkMode ? '#3498db' : '#3498db';
+        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const textColor = isDarkMode ? '#e0e0e0' : '#2c3e50';
+
         visitorsChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -195,8 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Visits per Day',
                     data: Object.values(visitCounts),
-                    backgroundColor: '#3498db',
-                    borderColor: '#2980b9',
+                    backgroundColor: chartColor,
+                    borderColor: isDarkMode ? '#2171a1' : '#2980b9',
                     borderWidth: 1
                 }]
             },
@@ -207,13 +221,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: false,
+                        labels: {
+                            color: textColor
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -224,7 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const visits = context.parsed.y;
                                 return `${visits} visit${visits !== 1 ? 's' : ''}`;
                             }
-                        }
+                        },
+                        backgroundColor: isDarkMode ? '#1e1e1e' : 'rgba(0, 0, 0, 0.7)',
+                        titleColor: isDarkMode ? '#e0e0e0' : 'white',
+                        bodyColor: isDarkMode ? '#e0e0e0' : 'white',
+                        borderColor: isDarkMode ? '#333' : 'rgba(0, 0, 0, 0.1)',
+                        borderWidth: 1
                     }
                 }
             }
