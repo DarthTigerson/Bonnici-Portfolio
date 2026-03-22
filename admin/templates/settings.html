@@ -1,0 +1,331 @@
+{% extends "layout.html" %}
+
+{% block header_title %}
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-grid">
+
+        <!-- Export Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-title">
+                    <h4>Export Data</h4>
+                    <p>Download a ZIP archive containing your config, webhooks, and all referenced images</p>
+                </div>
+            </div>
+            <div class="settings-card-body">
+                <p class="settings-note">
+                    <i class="fas fa-circle-info"></i>
+                    Messages and visitor traffic are <strong>not</strong> included in the export.
+                </p>
+                <button class="action-btn export-btn" onclick="triggerExport()">
+                    <i class="fas fa-download"></i>
+                    Download Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Import Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-title">
+                    <h4>Import Data</h4>
+                    <p>Restore from a previously exported ZIP — this will replace all current data</p>
+                </div>
+            </div>
+            <div class="settings-card-body">
+                <p class="settings-note settings-note-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    This will overwrite your current config, images, and webhooks. This cannot be undone.
+                </p>
+                <div class="import-row">
+                    <label class="file-label" for="import-file">
+                        <i class="fas fa-folder-open"></i>
+                        <span id="file-label-text">Choose a .zip file</span>
+                    </label>
+                    <input type="file" id="import-file" accept=".zip" onchange="onFileSelected(event)" style="display:none">
+                    <button class="action-btn import-btn" id="import-btn" onclick="triggerImport()" disabled>
+                        <i class="fas fa-upload"></i>
+                        Import
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function triggerExport() {
+    const btn = document.querySelector('.export-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+
+    const a = document.createElement('a');
+    a.href = '/settings/export';
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-download"></i> Download Export';
+    }, 3000);
+}
+
+function onFileSelected(event) {
+    const file = event.target.files[0];
+    const labelText = document.getElementById('file-label-text');
+    const importBtn = document.getElementById('import-btn');
+
+    if (file) {
+        labelText.textContent = file.name;
+        importBtn.disabled = false;
+    } else {
+        labelText.textContent = 'Choose a .zip file';
+        importBtn.disabled = true;
+    }
+}
+
+async function triggerImport() {
+    const fileInput = document.getElementById('import-file');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const btn = document.getElementById('import-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/settings/import', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showNotification('Import successful! Reload the page to see the changes.', 'success');
+        } else {
+            showNotification(result.detail || 'Import failed.', 'error');
+        }
+    } catch (err) {
+        showNotification('Import failed. Check the console for details.', 'error');
+        console.error(err);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Import';
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = type === 'success' ? 'save-notification' : 'error-notification';
+    notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+</script>
+
+<style>
+.settings-container {
+    width: 100%;
+    padding: 0 20px 80px 20px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 25px;
+}
+
+.settings-card {
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.settings-card-header {
+    background-color: var(--bg-primary);
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.settings-card-title h4 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    color: var(--text-primary);
+    transition: color 0.3s;
+}
+
+.settings-card-title p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+.settings-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.settings-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 0;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.settings-note i {
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.settings-note-warning {
+    border-color: rgba(243, 156, 18, 0.4);
+    color: var(--text-primary);
+}
+
+.settings-note-warning i {
+    color: #f39c12;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.export-btn {
+    background-color: var(--accent-color);
+    color: white;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.export-btn:hover:not(:disabled) {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.import-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease, background-color 0.3s, border-color 0.3s, color 0.3s;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 240px;
+    text-overflow: ellipsis;
+}
+
+.file-label:hover {
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+.import-btn {
+    background-color: #27ae60;
+    color: white;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.import-btn:hover:not(:disabled) {
+    background-color: #219150;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+}
+
+.save-notification,
+.error-notification {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+    z-index: 1000;
+}
+
+.save-notification {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.error-notification {
+    background-color: #f44336;
+    color: white;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .import-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .file-label {
+        max-width: 100%;
+    }
+}
+</style>
+{% endblock %}

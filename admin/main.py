@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from .routes import admin, home, messages, portfolio, profile, visitors, webhooks
+from .routes import admin, home, messages, portfolio, profile, settings, visitors, webhooks
 import sys
 import os
 # Add the parent directory to sys.path to allow importing from the root
@@ -25,5 +25,6 @@ app.include_router(home.router)
 app.include_router(messages.router)
 app.include_router(portfolio.router)
 app.include_router(profile.router)
+app.include_router(settings.router)
 app.include_router(visitors.router)
 app.include_router(webhooks.router)

@@ -303,6 +303,10 @@ body {
     background-image: url('../images/webhook.svg');
 }
 
+.settings-icon {
+    background-image: url('../images/settings.svg');
+}
+
 /* Invert the icon colors to white */
 .nav-item a .icon {
     filter: invert(1);

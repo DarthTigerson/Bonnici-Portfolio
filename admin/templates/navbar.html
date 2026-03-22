@@ -34,6 +34,12 @@
                 Visitors
             </a>
         </li>
+        <li class="nav-item {% if request.path == '/settings' %}active{% endif %}">
+            <a href="/settings">
+                <span class="icon settings-icon"></span>
+                Settings
+            </a>
+        </li>
     </ul>
     <div class="sidebar-footer">
         <a href="/logout" class="logout-btn">Logout</a>
