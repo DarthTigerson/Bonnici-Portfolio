@@ -132,10 +132,10 @@ class ConfigManager:
                     )
                 
                 # Validate image path
-                if not skill["image"].endswith('.webp'):
+                if not (skill["image"].endswith('.webp') or skill["image"].endswith('.svg')):
                     raise HTTPException(
                         status_code=400,
-                        detail=f"Skill {skill['title']} image must be in webp format"
+                        detail=f"Skill {skill['title']} image must be in webp or svg format"
                     )
 
     @staticmethod

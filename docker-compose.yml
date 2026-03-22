@@ -10,7 +10,8 @@ services:
     restart: unless-stopped
     container_name: bonnici-portfolio-front
     volumes:
-      - ./data:/app/data  # Mount data directory (includes database)
+      - ./data:/app/data
+      - ./front-app/dist:/app/front-app/dist  # Live frontend — rebuild locally with: npm run watch
     command: pdm run front
 
   admin:
